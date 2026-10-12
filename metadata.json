@@ -1,0 +1,8 @@
+{
+  "name": "Bisnis Qu 1.63",
+  "description": "App Management Bisnis UMKM Masa Kini",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
