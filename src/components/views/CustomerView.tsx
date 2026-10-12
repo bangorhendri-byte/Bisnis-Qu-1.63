@@ -42,9 +42,9 @@ export const CustomerView: React.FC<CustomerViewProps> = ({
   onSelectCustomerToService
 }) => {
   const [activeTab, setActiveTab] = useState<string>(() => {
-    if (initialTab === 'database-pelanggan' || initialTab === 'database') return 'daftar-pelanggan';
+    if (initialTab === 'database-pelanggan' || initialTab === 'database' || initialTab === 'list-pelanggan') return 'daftar-pelanggan';
     if (initialTab === 'reminder-servis' || initialTab === 'reminder') return 'kendaraan-pelanggan';
-    if (initialTab === 'member-poin' || initialTab === 'loyalty') return 'riwayat-servis-pelanggan';
+    if (initialTab === 'member-poin' || initialTab === 'loyalty' || initialTab === 'riwayat-service') return 'riwayat-servis-pelanggan';
     return initialTab || 'daftar-pelanggan';
   });
 
@@ -67,9 +67,9 @@ export const CustomerView: React.FC<CustomerViewProps> = ({
 
   useEffect(() => {
     if (initialTab) {
-      if (initialTab === 'database-pelanggan' || initialTab === 'database') setActiveTab('daftar-pelanggan');
+      if (initialTab === 'database-pelanggan' || initialTab === 'database' || initialTab === 'list-pelanggan') setActiveTab('daftar-pelanggan');
       else if (initialTab === 'reminder-servis' || initialTab === 'reminder') setActiveTab('kendaraan-pelanggan');
-      else if (initialTab === 'member-poin' || initialTab === 'loyalty') setActiveTab('riwayat-servis-pelanggan');
+      else if (initialTab === 'member-poin' || initialTab === 'loyalty' || initialTab === 'riwayat-service') setActiveTab('riwayat-servis-pelanggan');
       else setActiveTab(initialTab);
     }
   }, [initialTab]);

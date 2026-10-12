@@ -114,6 +114,12 @@ export const SettingView: React.FC<SettingViewProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<string>(initialTab);
 
+  React.useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
+
   // 1. Theme State
   const [selectedTheme, setSelectedTheme] = useState<'emerald' | 'teal' | 'forest' | 'lime'>(() => {
     return (localStorage.getItem('bq_theme') as any) || 'emerald';

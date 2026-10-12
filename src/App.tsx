@@ -66,6 +66,7 @@ import { CorePermissionsView } from './components/views/CorePermissionsView';
 import { CorporateBranchesView } from './components/views/CorporateBranchesView';
 import { DeviceSyncView } from './components/views/DeviceSyncView';
 import { SettingView } from './components/views/SettingView';
+import { StaffView } from './components/views/StaffView';
 import { LoginScreen } from './components/auth/LoginScreen';
 import { NewQueueModal } from './components/modals/NewQueueModal';
 import { ReceiptModal } from './components/modals/ReceiptModal';
@@ -382,7 +383,7 @@ export default function App() {
     // Free Tier Lock Rules:
     // Core Free Menus: servis, kasir, inventaris (Always 100% Free & Unlimited)
     // Non-Core Menus: pelanggan, marketing, basic, core, corporate (Require active trial or subscription)
-    const isCoreFreeMenu = mod.id === 'servis' || mod.id === 'kasir' || mod.id === 'inventaris';
+    const isCoreFreeMenu = mod.id === 'servis' || mod.id === 'kasir' || mod.id === 'inventaris' || mod.id === 'staff' || mod.id === 'setting';
     const isPermitted = isCoreFreeMenu || subscription.isTrialActive || subscription.isSubscribed;
 
     if (!isPermitted) {
@@ -875,6 +876,14 @@ export default function App() {
               onBack={handleBack}
             />
           );
+        case 'staff':
+          return (
+            <StaffView
+              initialTab={selectedSubMenu?.id || 'staff-absen'}
+              onBack={handleBack}
+              mechanics={INITIAL_MECHANICS}
+            />
+          );
         case 'basic':
           return (
             <BasicProfileView
@@ -979,6 +988,34 @@ export default function App() {
             />
           );
         case 'setting':
+          if (selectedSubMenu?.id === 'setting-profil') {
+            return (
+              <BasicProfileView
+                onBack={handleBack}
+                profile={profile}
+                onSaveProfile={(updated) => setProfile(updated)}
+              />
+            );
+          }
+          if (selectedSubMenu?.id === 'setting-hak-akses') {
+            return (
+              <CorePermissionsView
+                onBack={handleBack}
+                permissions={permissions}
+                onUpdatePermissions={(updated) => setPermissions(updated)}
+                onNavigateToDevices={() => {
+                  setSelectedSubMenu({
+                    id: 'setting-perangkat',
+                    title: 'Tautkan Perangkat / HP',
+                    subtitle: 'Tautkan HP Toko Utama (Pairing via QR)',
+                    iconName: 'Smartphone',
+                    badge: 'Pairing',
+                    targetView: 'setting-perangkat'
+                  });
+                }}
+              />
+            );
+          }
           if (selectedSubMenu?.id === 'setting-perangkat') {
             return (
               <DeviceSyncView
@@ -986,6 +1023,27 @@ export default function App() {
                 subscription={subscription}
                 workshopProfile={profile}
                 onOpenSubscription={() => setIsSubscriptionModalOpen(true)}
+              />
+            );
+          }
+          if (selectedSubMenu?.id === 'setting-addon-cabang') {
+            return (
+              <CorporateBranchesView
+                onBack={handleBack}
+                branches={branches}
+                onSaveBranches={(updated) => setBranches(updated)}
+                subscription={subscription}
+                onActivateBranchTrial={handleActivateBranchTrial}
+                onNavigateToDevices={() => {
+                  setSelectedSubMenu({
+                    id: 'setting-perangkat',
+                    title: 'Tautkan Perangkat / HP',
+                    subtitle: 'Tautkan HP Toko Utama (Pairing via QR)',
+                    iconName: 'Smartphone',
+                    badge: 'Pairing',
+                    targetView: 'setting-perangkat'
+                  });
+                }}
               />
             );
           }
@@ -1016,10 +1074,10 @@ export default function App() {
               onNavigateToDevices={() => {
                 setSelectedSubMenu({
                   id: 'setting-perangkat',
-                  title: 'Tautkan HP & Sinkron',
-                  subtitle: 'Hubungkan HP Karyawan (QR Code)',
+                  title: 'Tautkan Perangkat / HP',
+                  subtitle: 'Tautkan HP Toko Utama (Pairing via QR)',
                   iconName: 'Smartphone',
-                  badge: 'Multi-HP',
+                  badge: 'Pairing',
                   targetView: 'setting-perangkat'
                 });
               }}

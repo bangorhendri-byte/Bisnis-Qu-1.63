@@ -277,7 +277,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             <p className="text-[11px] text-slate-500">Pilih menu untuk membuka modul</p>
           </div>
           <span className="text-[10px] font-bold text-[#008952] bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
-            6 Menu
+            {modules.length} Menu
           </span>
         </div>
 

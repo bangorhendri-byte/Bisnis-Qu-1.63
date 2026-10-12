@@ -55,8 +55,8 @@ export const ServiceDetailView: React.FC<ServiceDetailViewProps> = ({
   const getNormalizedTab = (tab: string) => {
     if (tab === 'service-register' || tab === 'registrasi') return 'registrasi';
     if (tab === 'service-queue' || tab === 'antrian') return 'antrian';
-    if (tab === 'service-progress' || tab === 'proses-service') return 'proses-service';
-    if (tab === 'service-completed' || tab === 'selesai-service') return 'selesai-service';
+    if (tab === 'service-progress' || tab === 'proses-service' || tab === 'proses') return 'proses-service';
+    if (tab === 'service-completed' || tab === 'selesai-service' || tab === 'selesai') return 'selesai-service';
     if (tab === 'service-total' || tab === 'total-service') return 'total-service';
     return 'antrian';
   };

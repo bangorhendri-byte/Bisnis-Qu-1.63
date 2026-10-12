@@ -15,8 +15,8 @@ import {
 export const MENU_MODULES: MenuModuleConfig[] = [
   {
     id: 'servis',
-    title: 'Servis',
-    subtitle: 'Manajemen Bengkel',
+    title: 'Service',
+    subtitle: 'Manajemen Servis & Antrian',
     iconName: 'Wrench',
     badgeCount: '4 Aktif',
     badgeColor: 'bg-emerald-500',
@@ -39,16 +39,16 @@ export const MENU_MODULES: MenuModuleConfig[] = [
         targetView: 'service-queue'
       },
       {
-        id: 'proses-service',
-        title: 'Proses Service',
+        id: 'proses',
+        title: 'Proses',
         subtitle: 'Pengerjaan & Pergantian Part',
         iconName: 'Cog',
         badge: 'Dikerjakan',
         targetView: 'service-progress'
       },
       {
-        id: 'selesai-service',
-        title: 'Selesai Service',
+        id: 'selesai',
+        title: 'Selesai',
         subtitle: 'Unit Selesai & Cetak Nota / WA',
         iconName: 'CheckCircle2',
         badge: 'Selesai',
@@ -74,14 +74,6 @@ export const MENU_MODULES: MenuModuleConfig[] = [
     description: 'Pencatatan transaksi pembayaran jasa dan suku cadang dengan cetak struk cetak nota.',
     subMenus: [
       {
-        id: 'kasir',
-        title: 'Kasir',
-        subtitle: 'Pembayaran Servis & POS',
-        iconName: 'CreditCard',
-        badge: 'Bayar',
-        targetView: 'pos-checkout'
-      },
-      {
         id: 'piutang',
         title: 'Piutang',
         subtitle: 'Tagihan Servis Belum Lunas',
@@ -92,7 +84,7 @@ export const MENU_MODULES: MenuModuleConfig[] = [
       {
         id: 'riwayat-transaksi',
         title: 'Riwayat Transaksi',
-        subtitle: 'Log Riwayat Semua Nota',
+        subtitle: 'Log Riwayat Semua Nota & Bukti Bayar',
         iconName: 'FileText',
         badge: 'Riwayat',
         targetView: 'pos-history'
@@ -100,7 +92,7 @@ export const MENU_MODULES: MenuModuleConfig[] = [
       {
         id: 'petty-cash',
         title: 'Petty Cash',
-        subtitle: 'Modal & Uang Kembalian',
+        subtitle: 'Modal & Uang Kembalian Kasir',
         iconName: 'Coins',
         badge: 'Modal',
         targetView: 'pos-pettycash'
@@ -108,7 +100,7 @@ export const MENU_MODULES: MenuModuleConfig[] = [
       {
         id: 'kas-kecil',
         title: 'Kas Kecil',
-        subtitle: 'Biaya Operasional Harian',
+        subtitle: 'Biaya Operasional Harian Bengkel',
         iconName: 'Receipt',
         badge: 'Biaya',
         targetView: 'pos-expenses'
@@ -116,7 +108,7 @@ export const MENU_MODULES: MenuModuleConfig[] = [
       {
         id: 'closingan',
         title: 'Closingan',
-        subtitle: 'Tutup Shift & Rekonsiliasi',
+        subtitle: 'Tutup Shift & Rekonsiliasi Kasir',
         iconName: 'Calculator',
         badge: 'Tutup Buku',
         targetView: 'pos-closing'
@@ -134,15 +126,15 @@ export const MENU_MODULES: MenuModuleConfig[] = [
     subMenus: [
       {
         id: 'sparepart-datang',
-        title: 'Sparepart Datang (Inbound)',
+        title: 'Sparepart Datang',
         subtitle: 'Sparepart Baru / Tambah Qty / Scan Masuk',
         iconName: 'PlusCircle',
         badge: 'Inbound',
         targetView: 'inv-inbound'
       },
       {
-        id: 'katalog-sparepart',
-        title: 'Katalog Sparepart (Master)',
+        id: 'katalog-master',
+        title: 'Katalog Master',
         subtitle: 'Daftar Seluruh Suku Cadang & Ketersediaan',
         iconName: 'Boxes',
         targetView: 'inv-catalog'
@@ -172,6 +164,41 @@ export const MENU_MODULES: MenuModuleConfig[] = [
     ]
   },
   {
+    id: 'staff',
+    title: 'Staff',
+    subtitle: 'Presensi & Jadwal Karyawan',
+    iconName: 'Users',
+    badgeCount: '3 Menu',
+    badgeColor: 'bg-emerald-500',
+    description: 'Manajemen kehadiran mekanik dan kasir, pembagian shift kerja harian/mingguan, serta rekapitulasi presensi.',
+    subMenus: [
+      {
+        id: 'staff-absen',
+        title: 'Absen',
+        subtitle: 'Presensi Masuk & Pulang Harian Staff',
+        iconName: 'Clock',
+        badge: 'Presensi',
+        targetView: 'staff-absen'
+      },
+      {
+        id: 'staff-jadwal',
+        title: 'Jadwal',
+        subtitle: 'Jadwal Shift Kerja Mekanik & Kasir',
+        iconName: 'Calendar',
+        badge: 'Shift',
+        targetView: 'staff-jadwal'
+      },
+      {
+        id: 'staff-rekap',
+        title: 'Rekap Absen',
+        subtitle: 'Rekapitulasi Kehadiran & Jam Kerja Bulanan',
+        iconName: 'FileCheck',
+        badge: 'Rekap',
+        targetView: 'staff-rekap'
+      }
+    ]
+  },
+  {
     id: 'pelanggan',
     title: 'Pelanggan',
     subtitle: 'Data Motor & Pemilik',
@@ -181,9 +208,9 @@ export const MENU_MODULES: MenuModuleConfig[] = [
     description: 'Pusat master identitas pelanggan, keterhubungan data kendaraan bermotor, dan riwayat servis per unit.',
     subMenus: [
       {
-        id: 'daftar-pelanggan',
-        title: 'Daftar Pelanggan (Master)',
-        subtitle: 'Nama, Nomor Telepon/WhatsApp & Alamat',
+        id: 'list-pelanggan',
+        title: 'List Pelanggan',
+        subtitle: 'Daftar Nama, Nomor WhatsApp & Alamat Domisili',
         iconName: 'UserCheck',
         targetView: 'cust-master'
       },
@@ -191,12 +218,12 @@ export const MENU_MODULES: MenuModuleConfig[] = [
         id: 'kendaraan-pelanggan',
         title: 'Kendaraan Pelanggan',
         subtitle: 'Profil Kendaraan, Merk, Tipe & Plat Nomor',
-        iconName: 'BellRing',
+        iconName: 'Car',
         targetView: 'cust-vehicles'
       },
       {
-        id: 'riwayat-servis-pelanggan',
-        title: 'Riwayat Servis Pelanggan',
+        id: 'riwayat-service',
+        title: 'Riwayat Service',
         subtitle: 'Card Detail & Log Perawatan Tiap Kendaraan',
         iconName: 'Award',
         targetView: 'cust-history'
@@ -208,20 +235,20 @@ export const MENU_MODULES: MenuModuleConfig[] = [
     title: 'Marketing',
     subtitle: 'Promosi & Diskon',
     iconName: 'Megaphone',
-    badgeCount: '2 Promo',
+    badgeCount: '4 Menu',
     badgeColor: 'bg-emerald-500',
     description: 'Kampanye promosi bengkel, formulir pengiriman broadcast WhatsApp, manajemen voucher diskon, dan log pesan.',
     subMenus: [
       {
-        id: 'broadcast-wa',
-        title: 'Broadcast WhatsApp',
+        id: 'broadcast',
+        title: 'Broadcast',
         subtitle: 'Form Draf & Kirim Pesan Promo / Reminder',
         iconName: 'Send',
         targetView: 'mkt-broadcast'
       },
       {
-        id: 'promo-diskon',
-        title: 'Promo & Diskon',
+        id: 'promo',
+        title: 'Promo',
         subtitle: 'Kelola Voucher Diskon & Potongan Servis',
         iconName: 'Tag',
         badge: 'Aktif',
@@ -229,10 +256,18 @@ export const MENU_MODULES: MenuModuleConfig[] = [
       },
       {
         id: 'riwayat-pesan',
-        title: 'Riwayat Pesan / Campaign',
+        title: 'Riwayat Pesan',
         subtitle: 'Log Kampanye Pesan & Pengiriman Promosi',
         iconName: 'Star',
         targetView: 'mkt-history'
+      },
+      {
+        id: 'qrcode-online',
+        title: 'QR Code / Toko Online',
+        subtitle: 'Katalog Web Publik & QR Code Booking Servis',
+        iconName: 'QrCode',
+        badge: 'Online',
+        targetView: 'mkt-online'
       }
     ]
   },
@@ -241,190 +276,125 @@ export const MENU_MODULES: MenuModuleConfig[] = [
     title: 'Laporan',
     subtitle: 'Omset & Performa',
     iconName: 'BarChart3',
-    badgeCount: 'Hari Ini',
+    badgeCount: '4 Menu',
     badgeColor: 'bg-emerald-500',
-    description: 'Laporan pendapatan arus kas harian/bulanan, audit volume servis kendaraan, dan pemantauan piutang serta kas kecil.',
+    description: 'Laporan omset arus kas harian/bulanan, audit volume servis kendaraan, pemantauan piutang, dan audit 24 kolom.',
     subMenus: [
       {
-        id: 'laporan-pendapatan',
-        title: 'Laporan Pendapatan (Omzet)',
-        subtitle: 'Ringkasan Inflow Keuangan & Log Transaksi',
+        id: 'laporan-omset',
+        title: 'Omset',
+        subtitle: 'Ringkasan Omset & Arus Kas Transaksi',
         iconName: 'TrendingUp',
         targetView: 'rep-revenue'
       },
       {
-        id: 'laporan-servis',
-        title: 'Laporan Servis',
-        subtitle: 'Rekap Unit Selesai vs Aktif per Periode',
+        id: 'laporan-service',
+        title: 'Service',
+        subtitle: 'Rekapitulasi Volume & Unit Servis Selesai',
         iconName: 'UserCheck2',
         targetView: 'rep-service'
       },
       {
-        id: 'laporan-piutang-keuangan',
-        title: 'Laporan Piutang & Keuangan',
-        subtitle: 'Rincian Tagihan Belum Lunas & Kas Kecil',
+        id: 'laporan-piutang',
+        title: 'Piutang',
+        subtitle: 'Monitoring Tagihan Piutang & Kas Keluar',
         iconName: 'PieChart',
         targetView: 'rep-finance'
-      }
-    ]
-  },
-  {
-    id: 'basic',
-    title: 'Basic',
-    subtitle: 'Profil Bengkel',
-    iconName: 'Store',
-    badgeCount: 'Info',
-    badgeColor: 'bg-emerald-500',
-    description: 'Pengaturan identitas resmi bengkel, data pemilik, alamat operasional, dan kontak bisnis.',
-    subMenus: [
-      {
-        id: 'basic-profile',
-        title: 'Profil Bengkel',
-        subtitle: 'Nama Bengkel, Alamat, Pemilik & Kontak',
-        iconName: 'Store',
-        targetView: 'basic-profile'
-      }
-    ]
-  },
-  {
-    id: 'core',
-    title: 'Core',
-    subtitle: 'Hak Akses & Role',
-    iconName: 'ShieldAlert',
-    badgeCount: '3 Fitur',
-    badgeColor: 'bg-emerald-500',
-    description: 'Manajemen profil bengkel, hak akses otorisasi untuk Supervisor (SPV) dan Kasir, serta slot tautkan 3 HP.',
-    subMenus: [
-      {
-        id: 'core-profile',
-        title: 'Profil Bengkel',
-        subtitle: 'Nama Bengkel, Alamat, Pemilik & Kontak',
-        iconName: 'Store',
-        badge: 'Profil',
-        targetView: 'core-profile'
       },
       {
-        id: 'core-permissions',
-        title: 'Hak Akses',
-        subtitle: '(SPV & Kasir) Role & Permission',
-        iconName: 'Key',
-        badge: 'SPV & Kasir',
-        targetView: 'core-permissions'
-      },
-      {
-        id: 'core-devices',
-        title: 'Tautkan HP (3 Slot)',
-        subtitle: 'Pairing HP Kasir & Mekanik via QR',
-        iconName: 'Smartphone',
-        badge: '3 HP',
-        targetView: 'core-devices'
-      }
-    ]
-  },
-  {
-    id: 'corporate',
-    title: 'Cabang & Modul',
-    subtitle: 'Manajemen Cabang',
-    iconName: 'Building2',
-    badgeCount: '4 Fitur',
-    badgeColor: 'bg-emerald-500',
-    description: 'Pengelolaan cabang bengkel lengkap dengan profil, hak akses SPV/kasir, dan integrasi fitur Tautkan HP.',
-    subMenus: [
-      {
-        id: 'corp-profile',
-        title: 'Profil Bengkel',
-        subtitle: 'Nama Bengkel, Alamat, Pemilik & Kontak',
-        iconName: 'Store',
-        badge: 'Profil',
-        targetView: 'corp-profile'
-      },
-      {
-        id: 'corp-permissions',
-        title: 'Hak Akses',
-        subtitle: '(SPV & Kasir) Role & Permission',
-        iconName: 'Key',
-        badge: 'SPV & Kasir',
-        targetView: 'corp-permissions'
-      },
-      {
-        id: 'corp-branches',
-        title: 'Cabang',
-        subtitle: 'Form Card Kantor Cabang',
-        iconName: 'Building2',
-        badge: 'Cabang',
-        targetView: 'corp-branches'
-      },
-      {
-        id: 'corp-devices',
-        title: 'Tautkan HP',
-        subtitle: 'Sinkronisasi Multi-Perangkat Cabang',
-        iconName: 'Smartphone',
-        badge: 'Multi-HP',
-        targetView: 'corp-devices'
+        id: 'laporan-audit',
+        title: 'Audit (Ekspor Excel/CSV 24 Kolom)',
+        subtitle: 'Ekspor Audit Lengkap Buku Besar 24 Kolom',
+        iconName: 'FileSpreadsheet',
+        badge: '24 Kolom',
+        targetView: 'rep-audit'
       }
     ]
   },
   {
     id: 'setting',
     title: 'Setting',
-    subtitle: 'Tema, Backup & Sistem',
+    subtitle: 'Pengaturan & Konfigurasi',
     iconName: 'Settings',
     badgeCount: 'Sistem',
     badgeColor: 'bg-emerald-500',
-    description: 'Pengaturan tema tampilan, pencadangan data dengan opsi kustom, pemulihan data (restore), dan reset.',
+    description: 'Pengaturan profil toko, hak akses, tautkan HP toko utama, tema tampilan, backup/restore, aktivasi lisensi, dan add-on cabang.',
     subMenus: [
       {
+        id: 'setting-profil',
+        title: 'Profil Toko',
+        subtitle: 'Nama Bengkel, Alamat, Pemilik & Kontak',
+        iconName: 'Store',
+        targetView: 'setting-profil'
+      },
+      {
+        id: 'setting-hak-akses',
+        title: 'Hak Akses & PIN Owner',
+        subtitle: 'Role SPV & Kasir, Otorisasi & PIN Keamanan',
+        iconName: 'Key',
+        badge: 'Keamanan',
+        targetView: 'setting-hak-akses'
+      },
+      {
         id: 'setting-perangkat',
-        title: 'Tautkan HP & Sinkron',
-        subtitle: 'Hubungkan HP Karyawan (QR Code)',
+        title: 'Tautkan Perangkat / HP',
+        subtitle: 'Tautkan HP Toko Utama (Pairing via QR)',
         iconName: 'Smartphone',
-        badge: 'Multi-HP',
+        badge: 'Pairing',
         targetView: 'setting-perangkat'
       },
       {
         id: 'setting-tema',
-        title: 'Tema',
-        subtitle: 'Pilihan Nuansa Warna Aplikasi',
+        title: 'Tema & Tampilan',
+        subtitle: 'Pilihan Nuansa Warna & Visual Aplikasi',
         iconName: 'Palette',
-        targetView: 'setting-theme'
+        targetView: 'setting-tema'
       },
       {
         id: 'setting-backup',
-        title: 'Backup - Opsi',
+        title: 'Backup Data',
         subtitle: 'Ekspor Cadangan Database (.JSON)',
         iconName: 'Database',
         targetView: 'setting-backup'
       },
       {
         id: 'setting-restore',
-        title: 'Restore',
+        title: 'Restore Data',
         subtitle: 'Pulihkan Data dari Berkas Cadangan',
         iconName: 'UploadCloud',
         targetView: 'setting-restore'
       },
       {
         id: 'setting-reset',
-        title: 'Reset',
-        subtitle: 'Hapus Bersih Total / Reset Data',
+        title: 'Reset Data',
+        subtitle: 'Hapus Bersih Total / Reset Data Operasional',
         iconName: 'RotateCcw',
         badge: 'Bersih',
         targetView: 'setting-reset'
       },
       {
         id: 'setting-aktivasi',
-        title: 'Aktivasi PRO',
-        subtitle: 'Serial Number Email bageurhendri@gmail.com',
-        iconName: 'Key',
+        title: 'Aktivasi Lisensi / Input Key',
+        subtitle: 'Aktivasi Serial Number PRO & Cek Status Lisensi',
+        iconName: 'Crown',
         badge: 'Lisensi',
         targetView: 'setting-aktivasi'
       },
       {
         id: 'setting-update',
-        title: 'Update App',
-        subtitle: 'Auto-Adapt Data Tanpa Uninstall',
+        title: 'Update Aplikasi',
+        subtitle: 'Cek Pembaruan & Auto-Adapt Skema Data',
         iconName: 'Sparkles',
-        badge: 'v2.4.0',
+        badge: 'v1.60',
         targetView: 'setting-update'
+      },
+      {
+        id: 'setting-addon-cabang',
+        title: 'Add-On (+1 Cabang Baru)',
+        subtitle: 'Manajemen Cabang & Tambah Slot Kantor Cabang Baru',
+        iconName: 'Building2',
+        badge: 'Cabang',
+        targetView: 'setting-addon-cabang'
       }
     ]
   }

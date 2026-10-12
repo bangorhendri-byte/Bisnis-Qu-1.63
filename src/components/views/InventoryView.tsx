@@ -74,6 +74,7 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
   const [activeTab, setActiveTab] = useState<string>(() => {
     // Map legacy ids if needed
     if (initialTab === 'tambah-sparepart') return 'sparepart-datang';
+    if (initialTab === 'katalog-master') return 'katalog-sparepart';
     if (initialTab === 'stok-menipis') return 'stok-kritis';
     if (initialTab === 'pengadaan-suplier') return 'riwayat-pengadaan';
     return initialTab || 'sparepart-datang';
@@ -92,6 +93,7 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
   useEffect(() => {
     if (initialTab) {
       if (initialTab === 'tambah-sparepart') setActiveTab('sparepart-datang');
+      else if (initialTab === 'katalog-master') setActiveTab('katalog-sparepart');
       else if (initialTab === 'stok-menipis') setActiveTab('stok-kritis');
       else if (initialTab === 'pengadaan-suplier') setActiveTab('riwayat-pengadaan');
       else setActiveTab(initialTab);

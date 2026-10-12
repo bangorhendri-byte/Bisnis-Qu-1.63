@@ -16,7 +16,10 @@ import {
   CheckCircle2,
   Share2,
   Trash2,
-  FileText
+  FileText,
+  QrCode,
+  Globe,
+  ExternalLink
 } from 'lucide-react';
 import { MarketingCampaign, PromoVoucher, CustomerVehicle } from '../../types';
 
@@ -41,11 +44,15 @@ export const MarketingView: React.FC<MarketingViewProps> = ({
   onAddVoucher,
   onToggleVoucherActive
 }) => {
-  const [activeTab, setActiveTab] = useState<string>(() => {
-    if (initialTab === 'voucher-diskon' || initialTab === 'voucher') return 'promo-diskon';
-    if (initialTab === 'ulasan-google' || initialTab === 'reviews') return 'riwayat-pesan';
-    return initialTab || 'broadcast-wa';
-  });
+  const getNormalizedTab = (tab: string) => {
+    if (tab === 'broadcast' || tab === 'broadcast-wa' || tab === 'mkt-broadcast') return 'broadcast';
+    if (tab === 'promo' || tab === 'promo-diskon' || tab === 'voucher-diskon' || tab === 'voucher' || tab === 'mkt-promo') return 'promo';
+    if (tab === 'riwayat-pesan' || tab === 'mkt-history' || tab === 'ulasan-google' || tab === 'reviews') return 'riwayat-pesan';
+    if (tab === 'qrcode-online' || tab === 'mkt-online' || tab === 'toko-online' || tab === 'qrcode') return 'qrcode-online';
+    return 'broadcast';
+  };
+
+  const [activeTab, setActiveTab] = useState<string>(() => getNormalizedTab(initialTab));
 
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
@@ -68,11 +75,13 @@ export const MarketingView: React.FC<MarketingViewProps> = ({
   const [newVoucherQuota, setNewVoucherQuota] = useState<number>(50);
   const [isAddVoucherFormOpen, setIsAddVoucherFormOpen] = useState(false);
 
+  // Sub-Menu D State (Toko Online / QR Code)
+  const [onlineBookingActive, setOnlineBookingActive] = useState(true);
+  const [waConsultActive, setWaConsultActive] = useState(true);
+
   useEffect(() => {
     if (initialTab) {
-      if (initialTab === 'voucher-diskon' || initialTab === 'voucher') setActiveTab('promo-diskon');
-      else if (initialTab === 'ulasan-google' || initialTab === 'reviews') setActiveTab('riwayat-pesan');
-      else setActiveTab(initialTab);
+      setActiveTab(getNormalizedTab(initialTab));
     }
   }, [initialTab]);
 
@@ -89,12 +98,12 @@ export const MarketingView: React.FC<MarketingViewProps> = ({
 
   const getHeaderMeta = () => {
     switch (activeTab) {
-      case 'broadcast-wa':
+      case 'broadcast':
         return {
           title: 'Broadcast WhatsApp',
           subtitle: 'Form Draf & Kirim Pesan Promo / Reminder Servis'
         };
-      case 'promo-diskon':
+      case 'promo':
         return {
           title: 'Promo & Diskon',
           subtitle: 'Kelola Voucher Diskon & Potongan Servis Bengkel'
@@ -104,9 +113,14 @@ export const MarketingView: React.FC<MarketingViewProps> = ({
           title: 'Riwayat Pesan / Campaign',
           subtitle: 'Log Kampanye Pesan & Pengiriman Promosi'
         };
+      case 'qrcode-online':
+        return {
+          title: 'QR Code / Toko Online',
+          subtitle: 'Katalog Web Publik & QR Code Booking Servis Mandiri'
+        };
       default:
         return {
-          title: 'Marketing',
+          title: 'Marketing Bengkel',
           subtitle: 'Promosi & Komunikasi Pelanggan'
         };
     }
@@ -240,6 +254,42 @@ export const MarketingView: React.FC<MarketingViewProps> = ({
             </div>
           </div>
         </div>
+
+        {/* Tab Selector */}
+        <div className="flex items-center gap-1.5 mt-2.5 bg-emerald-800/50 p-1 rounded-xl text-xs overflow-x-auto scrollbar-none">
+          <button
+            onClick={() => setActiveTab('broadcast')}
+            className={`flex-1 py-1 px-2.5 rounded-lg font-bold transition-all text-center cursor-pointer whitespace-nowrap ${
+              activeTab === 'broadcast' ? 'bg-white text-[#008952] shadow-xs' : 'text-emerald-100 hover:text-white'
+            }`}
+          >
+            Broadcast
+          </button>
+          <button
+            onClick={() => setActiveTab('promo')}
+            className={`flex-1 py-1 px-2.5 rounded-lg font-bold transition-all text-center cursor-pointer whitespace-nowrap ${
+              activeTab === 'promo' ? 'bg-white text-[#008952] shadow-xs' : 'text-emerald-100 hover:text-white'
+            }`}
+          >
+            Promo
+          </button>
+          <button
+            onClick={() => setActiveTab('riwayat-pesan')}
+            className={`flex-1 py-1 px-2.5 rounded-lg font-bold transition-all text-center cursor-pointer whitespace-nowrap ${
+              activeTab === 'riwayat-pesan' ? 'bg-white text-[#008952] shadow-xs' : 'text-emerald-100 hover:text-white'
+            }`}
+          >
+            Riwayat Pesan
+          </button>
+          <button
+            onClick={() => setActiveTab('qrcode-online')}
+            className={`flex-1 py-1 px-2.5 rounded-lg font-bold transition-all text-center cursor-pointer whitespace-nowrap ${
+              activeTab === 'qrcode-online' ? 'bg-white text-[#008952] shadow-xs' : 'text-emerald-100 hover:text-white'
+            }`}
+          >
+            QR Code / Toko Online
+          </button>
+        </div>
       </div>
 
       {/* Floating Toast Notification */}
@@ -265,7 +315,7 @@ export const MarketingView: React.FC<MarketingViewProps> = ({
             SUB-MENU A: BROADCAST WHATSAPP
             - Large form card with minimalist underlined inputs for drafting and sending service reminders or promo messages
         ===================================================================== */}
-        {activeTab === 'broadcast-wa' && (
+        {(activeTab === 'broadcast' || activeTab === 'broadcast-wa') && (
           <div className="space-y-4">
             {/* LARGE FORM CARD */}
             <div className="bg-white rounded-3xl p-5 sm:p-7 shadow-xs border border-slate-200/80 space-y-5">
@@ -375,7 +425,7 @@ export const MarketingView: React.FC<MarketingViewProps> = ({
             SUB-MENU B: PROMO & DISKON
             - Medium-to-large card layout to manage active discounts and service vouchers using minimalist underlined fields
         ===================================================================== */}
-        {activeTab === 'promo-diskon' && (
+        {(activeTab === 'promo' || activeTab === 'promo-diskon') && (
           <div className="space-y-4">
             {/* Header Action & Stats */}
             <div className="flex items-center justify-between px-1">
@@ -682,6 +732,118 @@ export const MarketingView: React.FC<MarketingViewProps> = ({
                   </div>
                 ))
               )}
+            </div>
+          </div>
+        )}
+
+        {/* =====================================================================
+            SUB-MENU D: QR CODE / TOKO ONLINE
+        ===================================================================== */}
+        {activeTab === 'qrcode-online' && (
+          <div className="space-y-4">
+            <div className="bg-white rounded-3xl p-5 sm:p-7 shadow-xs border border-slate-200/80 space-y-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
+                <div>
+                  <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-[#008952] uppercase tracking-wider inline-block">
+                    Katalog Web & Booking Mandiri
+                  </span>
+                  <h2 className="text-base sm:text-lg font-extrabold text-slate-900 tracking-tight mt-1">
+                    QR Code & Portal Booking Servis Pelanggan
+                  </h2>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Pelanggan dapat scan QR Code ini di meja kasir atau membuka tautan web untuk mendaftar antrian secara mandiri.
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => {
+                    handleCopyText('https://bengkelqu.id/book/bengkel-berkah-jaya', 999);
+                    showToast('Tautan web booking pelanggan berhasil disalin!');
+                  }}
+                  className="bg-[#008952] hover:bg-emerald-700 active:scale-95 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow-md shadow-emerald-700/20 flex items-center justify-center gap-1.5 transition-all cursor-pointer self-start sm:self-center shrink-0"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>Salin Link Web</span>
+                </button>
+              </div>
+
+              {/* QR Code Presentation Box */}
+              <div className="flex flex-col sm:flex-row items-center gap-6 p-5 rounded-2xl bg-slate-50 border border-slate-100">
+                <div className="w-40 h-40 bg-white rounded-2xl p-3 shadow-md border-2 border-emerald-500/30 flex flex-col items-center justify-center shrink-0">
+                  <QrCode className="w-28 h-28 text-[#008952]" />
+                  <span className="text-[9px] font-black text-slate-500 tracking-wider uppercase mt-1">Scan untuk Booking</span>
+                </div>
+
+                <div className="space-y-3 flex-1 min-w-0">
+                  <div>
+                    <h3 className="text-xs font-bold text-slate-800">Tautan Resmi Toko / Bengkel:</h3>
+                    <div className="flex items-center gap-2 mt-1 bg-white p-2.5 rounded-xl border border-slate-200">
+                      <Globe className="w-4 h-4 text-[#008952] shrink-0" />
+                      <span className="text-xs font-mono text-slate-700 truncate flex-1">
+                        https://bengkelqu.id/book/bengkel-berkah-jaya
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => {
+                        const shareUrl = `https://wa.me/?text=${encodeURIComponent('Halo! Mau servis motor tanpa antri lama? Booking jadwal servis di Bengkel Qu secara online: https://bengkelqu.id/book/bengkel-berkah-jaya')}`;
+                        window.open(shareUrl, '_blank');
+                      }}
+                      className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs cursor-pointer transition-colors"
+                    >
+                      <Share2 className="w-3.5 h-3.5" />
+                      <span>Share ke WhatsApp</span>
+                    </button>
+
+                    <button
+                      onClick={() => showToast('Mencetak poster QR Code kasir Bengkel Qu...')}
+                      className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span>Cetak Poster Meja</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Fitur Aktif Toko Online */}
+              <div className="space-y-2 pt-1">
+                <h3 className="text-xs font-bold text-slate-800">Status Layanan Online Mandiri:</h3>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <div className="p-3 bg-white rounded-xl border border-slate-200 flex items-center justify-between">
+                    <div>
+                      <span className="text-xs font-bold text-slate-800 block">Pendaftaran Antrian Online</span>
+                      <span className="text-[10px] text-slate-400">Pelanggan daftar dari rumah</span>
+                    </div>
+                    <button
+                      onClick={() => setOnlineBookingActive(!onlineBookingActive)}
+                      className={`px-2.5 py-1 rounded-full text-[10px] font-bold cursor-pointer transition-colors ${
+                        onlineBookingActive ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-500'
+                      }`}
+                    >
+                      {onlineBookingActive ? '✓ Aktif' : 'Nonaktif'}
+                    </button>
+                  </div>
+
+                  <div className="p-3 bg-white rounded-xl border border-slate-200 flex items-center justify-between">
+                    <div>
+                      <span className="text-xs font-bold text-slate-800 block">Konsultasi WhatsApp Otomatis</span>
+                      <span className="text-[10px] text-slate-400">Hubungkan langsung ke mekanik</span>
+                    </div>
+                    <button
+                      onClick={() => setWaConsultActive(!waConsultActive)}
+                      className={`px-2.5 py-1 rounded-full text-[10px] font-bold cursor-pointer transition-colors ${
+                        waConsultActive ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-500'
+                      }`}
+                    >
+                      {waConsultActive ? '✓ Aktif' : 'Nonaktif'}
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         )}
