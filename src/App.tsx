@@ -68,6 +68,7 @@ import { DeviceSyncView } from './components/views/DeviceSyncView';
 import { SettingView } from './components/views/SettingView';
 import { StaffView } from './components/views/StaffView';
 import { LoginScreen } from './components/auth/LoginScreen';
+import { GoogleSignIn } from './services/googleSignIn';
 import { NewQueueModal } from './components/modals/NewQueueModal';
 import { ReceiptModal } from './components/modals/ReceiptModal';
 import { NotificationDrawer } from './components/modals/NotificationDrawer';
@@ -304,11 +305,31 @@ export default function App() {
     localStorage.setItem('bq_user_session', JSON.stringify(session));
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      // 1. Eksekusi fungsi GoogleSignIn().signOut()
+      await GoogleSignIn.signOut();
+    } catch (e) {
+      console.warn('Google sign out notice:', e);
+    }
+
+    // 2. Bersihkan seluruh local storage/session (SharedPreferences/State)
     setUserSession(null);
     localStorage.removeItem('bq_user_session');
+    localStorage.removeItem('bq_google_user_session');
+    sessionStorage.clear();
+
+    // 3. Reset navigation stack secara total (pushAndRemoveUntil simulator)
     setCurrentScreen('dashboard');
     setSelectedModule(null);
+    setSelectedSubMenu(null);
+    setCurrentTab('dashboard');
+
+    // Reset URL and history stack agar pengguna tidak bisa menekan tombol Back HP untuk masuk lagi tanpa login
+    if (typeof window !== 'undefined' && window.history) {
+      window.history.pushState(null, '', window.location.pathname);
+      window.history.replaceState(null, '', window.location.pathname);
+    }
   };
 
   // Save to localStorage
@@ -806,6 +827,7 @@ export default function App() {
               onResetDailyQueues={handleResetDailyQueues}
               spareparts={spareparts}
               mechanics={INITIAL_MECHANICS}
+              profile={profile}
             />
           );
         case 'kasir':
@@ -821,6 +843,7 @@ export default function App() {
               preselectedQueue={preselectedQueueForPOS}
               onUpdateQueueStatus={handleUpdateQueueStatus}
               onAddQueue={handleAddQueue}
+              profile={profile}
             />
           );
         case 'inventaris':
@@ -835,6 +858,7 @@ export default function App() {
               onAddNewPart={handleAddNewPart}
               onSaveInboundStock={handleSaveInboundStock}
               onReportDamagedGood={handleReportDamagedGood}
+              profile={profile}
             />
           );
         case 'pelanggan':
@@ -1071,6 +1095,10 @@ export default function App() {
               onActivateSerialKey={handleActivateSerialKey}
               onActivateBranchTrial={handleActivateBranchTrial}
               onReloadDemoData={() => handleResetData('factory')}
+              onSaveProfile={(updated) => {
+                setProfile(updated);
+                localStorage.setItem('bq_profile', JSON.stringify(updated));
+              }}
               onNavigateToDevices={() => {
                 setSelectedSubMenu({
                   id: 'setting-perangkat',
@@ -1097,13 +1125,18 @@ export default function App() {
     return null;
   };
 
-  // Tampilkan Halaman Login Auto Google Account terlebih dahulu sebelum masuk ke Halaman Utama
+  // Tampilkan Halaman Login UsahaQu 1.61 dengan Preset BengkelQu
   if (!userSession) {
     return (
       <AndroidFrame canGoBack={false}>
         <LoginScreen
           onLoginSuccess={handleLoginSuccess}
-          defaultEmail="smbsyariah@gmail.com"
+          defaultEmail="owner@usahaqu.id"
+          profile={profile}
+          onUpdateProfile={(updated) => {
+            setProfile(updated);
+            localStorage.setItem('bq_profile', JSON.stringify(updated));
+          }}
         />
       </AndroidFrame>
     );

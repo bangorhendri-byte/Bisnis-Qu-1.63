@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowLeft, Info, Sparkles, Wrench } from 'lucide-react';
+import { SafeArea } from './SafeArea';
 
 interface SubMenuHeaderProps {
   title: string;
@@ -18,8 +19,9 @@ export const SubMenuHeader: React.FC<SubMenuHeaderProps> = ({
 }) => {
   return (
     <div className="relative">
-      {/* Top Header: Solid Green Background */}
-      <div className="bg-[#008952] text-white px-5 pt-4 pb-8 relative overflow-hidden shadow-md">
+      {/* Top Header: Solid Green Background with SafeArea */}
+      <SafeArea topOnly className="bg-[#008952]">
+        <div className="bg-[#008952] text-white px-5 pt-3 pb-8 relative overflow-hidden shadow-md">
         {/* Subtle vector illustration graphic on the right */}
         <div className="absolute -right-4 -bottom-6 opacity-15 pointer-events-none transform rotate-12 select-none">
           {iconGraphic || (
@@ -50,11 +52,12 @@ export const SubMenuHeader: React.FC<SubMenuHeaderProps> = ({
           <div className="flex items-center gap-2">
             <div className="px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-xs text-[11px] font-semibold text-white flex items-center gap-1">
               <Sparkles className="w-3 h-3 text-emerald-200" />
-              <span>v1.60</span>
+              <span>v1.61</span>
             </div>
           </div>
         </div>
       </div>
+    </SafeArea>
 
       {/* Below the header: Rounded white container card with small info icon and title label */}
       <div className="px-4 -mt-5 relative z-20">

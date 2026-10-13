@@ -57,7 +57,7 @@ export const SubMenuPage: React.FC<SubMenuPageProps> = ({
       {/* Footer hint */}
       <div className="py-3 px-4 text-center bg-slate-50 border-t border-slate-100 text-[11px] text-slate-400 flex items-center justify-center gap-1.5">
         <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-        <span>Bengkel Qu 1.60 • Sistem Operasional Bengkel Terintegrasi</span>
+        <span>UsahaQu 1.61 • Presets BengkelQu Terintegrasi</span>
       </div>
     </div>
   );

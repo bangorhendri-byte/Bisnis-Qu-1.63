@@ -19,78 +19,74 @@ export interface ProTierMeta {
 export const PRO_TIERS: Record<string, ProTierMeta> = {
   basic: {
     id: 'basic',
-    name: 'Basic (Freemium)',
-    tagline: 'Gratis / Kasir Dasar',
+    name: 'Basic (Free Lifetime - Rp 0)',
+    tagline: '100% Gratis Selamanya (Solo Mode)',
     codePrefix: 'BASIC',
     dailyRate: 0,
     rateLabel: 'Gratis (Rp 0)',
     features: [
-      'Kasir Dasar (Penjualan, Struk Fisik & WhatsApp)',
-      'Registrasi & Antrian Servis Kendaraan',
-      'Katalog Sparepart & Stok Minimum',
-      '100% Gratis Selamanya (Solo Mode)'
+      '100% Gratis Selamanya (Solo Mode)',
+      'Akses Menu Utama: Service (Registrasi, Antrian, Proses, Selesai)',
+      'Akses Menu Utama: Kasir (Pembayaran Tunai, QRIS, Struk WA/Printers)',
+      'Akses Menu Utama: Inventaris (Katalog Sparepart & Stok Minimum)'
     ]
   },
   core: {
     id: 'core',
-    name: 'Core / Pro',
-    tagline: 'Profil, Hak Akses/PIN Owner, Audit 24 Kolom, Tautkan HP',
+    name: 'PRO (Rp 1.000 / Hari)',
+    tagline: 'Paling Populer - Modul Lengkap & Multi-Perangkat',
     codePrefix: 'CORE',
     dailyRate: 1000,
     rateLabel: 'Rp 1.000 / hari',
     features: [
-      'Semua fitur Basic (Freemium)',
-      'Profil Bengkel & Hak Akses / PIN Owner',
-      'Audit 24 Kolom Transaksi Lengkap',
-      'Fitur Tautkan HP & Sinkronisasi Kasir/Mekanik',
-      'Modul Marketing (Broadcast WhatsApp & Voucher Diskon)',
-      'Modul CRM Pelanggan & Riwayat Servis',
-      'Modul Piutang & Kas Kecil Operasional'
+      'Semua Fitur Paket Basic',
+      'Modul Staff (Absen, Jadwal, Rekap)',
+      'Modul Marketing (Broadcast WhatsApp & Voucher Promo)',
+      'Modul Pelanggan & Riwayat Service Lengkap',
+      'Laporan Audit 24 Kolom (Ekspor Excel/CSV)',
+      'Profil Bengkel, PIN Owner, & Tautkan HP Toko'
     ]
   },
   addon_branch: {
     id: 'addon_branch',
-    name: 'Add-On (+1 Cabang)',
-    tagline: 'Rp1.000 / Hari per Cabang Tambahan (Trial 10 Hari Auto-ON)',
+    name: 'Add-On (+1 Cabang Baru): Rp 1.000 / Hari',
+    tagline: 'Buka Slot Cabang Baru & Multi-Cabang',
     codePrefix: 'BRANCH',
     dailyRate: 1000,
     rateLabel: 'Rp 1.000 / hari',
     features: [
-      'Buka Slot Cabang Baru Secara Instan',
-      'Fitur Tautkan HP Aktif untuk Cabang Baru',
-      'Pengelolaan Multi-Cabang Bengkel Terintegrasi',
-      'Laporan Komparasi Omset & Laba Antar Cabang',
-      'Trial 10 Hari Auto-ON Langsung Aktif'
+      'Buka Slot Cabang Baru Instan',
+      'Tautkan HP Aktif untuk Cabang Baru',
+      'Pengelolaan Multi-Cabang Terintegrasi',
+      'Laporan Komparasi Omset & Laba Antar Cabang'
     ]
   },
   AddOnBranch: {
     id: 'AddOnBranch',
-    name: 'Add-On (+1 Cabang)',
-    tagline: 'Rp1.000 / Hari per Cabang Tambahan (Trial 10 Hari Auto-ON)',
+    name: 'Add-On (+1 Cabang Baru): Rp 1.000 / Hari',
+    tagline: 'Buka Slot Cabang Baru & Multi-Cabang',
     codePrefix: 'BRANCH',
     dailyRate: 1000,
     rateLabel: 'Rp 1.000 / hari',
     features: [
-      'Buka Slot Cabang Baru Secara Instan',
-      'Fitur Tautkan HP Aktif untuk Cabang Baru',
-      'Pengelolaan Multi-Cabang Bengkel Terintegrasi',
-      'Laporan Komparasi Omset & Laba Antar Cabang',
-      'Trial 10 Hari Auto-ON Langsung Aktif'
+      'Buka Slot Cabang Baru Instan',
+      'Tautkan HP Aktif untuk Cabang Baru',
+      'Pengelolaan Multi-Cabang Terintegrasi',
+      'Laporan Komparasi Omset & Laba Antar Cabang'
     ]
   },
   corporate: {
     id: 'corporate',
-    name: 'Add-On (+1 Cabang)',
-    tagline: 'Rp1.000 / Hari per Cabang Tambahan (Trial 10 Hari Auto-ON)',
+    name: 'Add-On (+1 Cabang Baru): Rp 1.000 / Hari',
+    tagline: 'Buka Slot Cabang Baru & Multi-Cabang',
     codePrefix: 'BRANCH',
     dailyRate: 1000,
     rateLabel: 'Rp 1.000 / hari',
     features: [
-      'Buka Slot Cabang Baru Secara Instan',
-      'Fitur Tautkan HP Aktif untuk Cabang Baru',
-      'Pengelolaan Multi-Cabang Bengkel Terintegrasi',
-      'Laporan Komparasi Omset & Laba Antar Cabang',
-      'Trial 10 Hari Auto-ON Langsung Aktif'
+      'Buka Slot Cabang Baru Instan',
+      'Tautkan HP Aktif untuk Cabang Baru',
+      'Pengelolaan Multi-Cabang Terintegrasi',
+      'Laporan Komparasi Omset & Laba Antar Cabang'
     ]
   }
 };

@@ -23,8 +23,9 @@ import {
   Layers,
   Sparkles
 } from 'lucide-react';
-import { ServiceQueue, ServiceItem, ServiceStatus, Sparepart, Mechanic } from '../../types';
+import { ServiceQueue, ServiceItem, ServiceStatus, Sparepart, Mechanic, WorkshopProfile } from '../../types';
 import { INITIAL_SPAREPARTS, INITIAL_MECHANICS } from '../../data/mockData';
+import { getBusinessPreset, BusinessPresetConfig } from '../../data/businessPresets';
 
 interface ServiceDetailViewProps {
   initialTab?: string;
@@ -37,6 +38,7 @@ interface ServiceDetailViewProps {
   onResetDailyQueues?: () => void;
   spareparts?: Sparepart[];
   mechanics?: Mechanic[];
+  profile?: WorkshopProfile;
 }
 
 export const ServiceDetailView: React.FC<ServiceDetailViewProps> = ({
@@ -49,8 +51,12 @@ export const ServiceDetailView: React.FC<ServiceDetailViewProps> = ({
   onSelectQueueForInvoice,
   onResetDailyQueues,
   spareparts = INITIAL_SPAREPARTS,
-  mechanics = INITIAL_MECHANICS
+  mechanics = INITIAL_MECHANICS,
+  profile
 }) => {
+  const presetConfig: BusinessPresetConfig = getBusinessPreset(profile?.selectedPreset);
+  const labels = presetConfig.labels;
+
   // Normalize initialTab to our 5 active sub-menus
   const getNormalizedTab = (tab: string) => {
     if (tab === 'service-register' || tab === 'registrasi') return 'registrasi';
@@ -101,38 +107,38 @@ export const ServiceDetailView: React.FC<ServiceDetailViewProps> = ({
   // Get today date string YYYY-MM-DD
   const todayDateStr = new Date().toISOString().split('T')[0];
 
-  // Dynamic Header Title & Subtitle based on active sub-menu
+  // Dynamic Header Title & Subtitle based on active sub-menu & Preset
   const getHeaderMeta = () => {
     switch (activeTab) {
       case 'registrasi':
         return {
-          title: 'Registrasi',
-          subtitle: 'Input Pendaftaran Unit Baru'
+          title: labels.flowStep1,
+          subtitle: `Input Pendaftaran ${labels.unitOrVehicle} Masuk`
         };
       case 'antrian':
         return {
-          title: 'Antrian',
-          subtitle: 'Daftar Menunggu Servis'
+          title: labels.flowStep2,
+          subtitle: `Daftar Menunggu ${labels.serviceModule}`
         };
       case 'proses-service':
         return {
-          title: 'Proses Service',
-          subtitle: 'Pengerjaan Teknisi Aktif'
+          title: labels.flowStep3,
+          subtitle: `Pengerjaan ${labels.operatorOrStaff} Aktif`
         };
       case 'selesai-service':
         return {
-          title: 'Selesai Service',
-          subtitle: 'Unit Selesai & Cetak Nota / WA'
+          title: labels.flowStep4,
+          subtitle: `${labels.unitOrVehicle} Selesai & Cetak Nota / WA`
         };
       case 'total-service':
         return {
-          title: 'Total Service',
-          subtitle: 'Rekap Log Semua Servis Hari Ini'
+          title: labels.flowStep5,
+          subtitle: `Rekap Log Semua ${labels.serviceModule} Hari Ini`
         };
       default:
         return {
-          title: 'Manajemen Servis',
-          subtitle: 'Sistem Operasional Servis'
+          title: `Manajemen ${labels.serviceModule}`,
+          subtitle: labels.serviceSubtitle
         };
     }
   };
@@ -460,33 +466,33 @@ Unit Anda telah selesai dikerjakan dan sudah dicek QC. Silakan datang ke kasir B
 
               {/* Minimalist Full Screen Underline Form */}
               <form onSubmit={handleRegisterSubmit} className="space-y-6">
-                {/* 1. Plat Nomor Kendaraan */}
+                {/* 1. Identitas Unit (No. Polisi / No. Meja / Barcode / ID Pasien / Kode Vendor) */}
                 <div className="group">
                   <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
-                    Nomor Plat Kendaraan *
+                    {labels.unitIdentifier} *
                   </label>
                   <input
                     type="text"
                     required
                     value={regPlate}
                     onChange={(e) => setRegPlate(e.target.value.toUpperCase())}
-                    placeholder="Contoh: D 4521 ABC"
+                    placeholder={`Contoh: ${labels.unitIdentifier === 'No. Polisi' ? 'B 3829 TKR' : labels.unitIdentifier === 'No. Meja / Lokasi' ? 'Meja 08' : labels.unitIdentifier === 'Barcode / Kode SKU' ? '89927532109' : labels.unitIdentifier === 'ID Pasien / Rekam Medis' ? 'RM-2026-081' : 'VND-04'}`}
                     className="w-full bg-transparent border-0 border-b-2 border-slate-300 focus:border-[#008952] focus:ring-0 rounded-none py-2 px-0 text-slate-900 font-extrabold text-base tracking-wider transition-colors placeholder:text-slate-300 placeholder:font-normal focus:outline-none"
                   />
                 </div>
 
-                {/* 2. Nama Pemilik & No WhatsApp */}
+                {/* 2. Nama & No WhatsApp */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="group">
                     <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
-                      Nama Pemilik / Pelanggan *
+                      Nama {labels.customerLabel} *
                     </label>
                     <input
                       type="text"
                       required
                       value={regCustomerName}
                       onChange={(e) => setRegCustomerName(e.target.value)}
-                      placeholder="Nama lengkap pelanggan"
+                      placeholder={`Nama lengkap ${labels.customerLabel.toLowerCase()}`}
                       className="w-full bg-transparent border-0 border-b border-slate-300 focus:border-[#008952] focus:ring-0 rounded-none py-2 px-0 text-slate-800 font-semibold text-sm transition-colors placeholder:text-slate-300 placeholder:font-normal focus:outline-none"
                     />
                   </div>
@@ -505,11 +511,11 @@ Unit Anda telah selesai dikerjakan dan sudah dicek QC. Silakan datang ke kasir B
                   </div>
                 </div>
 
-                {/* 3. Model Kendaraan & Tipe */}
+                {/* 3. Model / Deskripsi & Tipe */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="group">
                     <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
-                      Model Kendaraan
+                      {labels.unitModelLabel}
                     </label>
                     <input
                       type="text"

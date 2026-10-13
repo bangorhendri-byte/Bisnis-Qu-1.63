@@ -30,7 +30,8 @@ import {
   ShieldCheck,
   Calculator,
   Receipt,
-  Clock
+  Clock,
+  LogOut
 } from 'lucide-react';
 import { 
   ServiceQueue, 
@@ -61,6 +62,8 @@ import {
   calculateAddonBranchProrate
 } from '../../utils/licenseManager';
 
+import { BUSINESS_PRESETS, getBusinessPreset, BusinessPresetType } from '../../data/businessPresets';
+
 interface SettingViewProps {
   initialTab?: string;
   onBack: () => void;
@@ -85,6 +88,7 @@ interface SettingViewProps {
   onReloadDemoData?: () => void;
   onNavigateToDevices?: () => void;
   onActivateBranchTrial?: () => { success: boolean; message: string };
+  onSaveProfile?: (updated: WorkshopProfile) => void;
 }
 
 export const SettingView: React.FC<SettingViewProps> = ({
@@ -110,7 +114,8 @@ export const SettingView: React.FC<SettingViewProps> = ({
   onActivateSerialKey,
   onReloadDemoData,
   onNavigateToDevices,
-  onActivateBranchTrial
+  onActivateBranchTrial,
+  onSaveProfile
 }) => {
   const [activeTab, setActiveTab] = useState<string>(initialTab);
 
@@ -166,6 +171,7 @@ export const SettingView: React.FC<SettingViewProps> = ({
 
   // 6. Update App State
   const [migrationStatus, setMigrationStatus] = useState<{ checked: boolean; msg: string } | null>(null);
+  const [showLogoutConfirmModal, setShowLogoutConfirmModal] = useState(false);
 
   // Theme Choices
   const THEMES = [
@@ -399,26 +405,55 @@ export const SettingView: React.FC<SettingViewProps> = ({
     <div className="flex-1 bg-slate-50 flex flex-col">
       {/* Top Header */}
       <div className="bg-[#008952] text-white px-5 pt-4 pb-5 shadow-md">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-3 min-w-0">
             <button
               onClick={onBack}
               aria-label="Kembali"
-              className="w-10 h-10 rounded-full bg-white/15 active:bg-white/30 flex items-center justify-center transition-colors shadow-sm cursor-pointer"
+              className="w-10 h-10 shrink-0 rounded-full bg-white/15 active:bg-white/30 flex items-center justify-center transition-colors shadow-sm cursor-pointer"
             >
               <ArrowLeft className="w-5 h-5 text-white" />
             </button>
-            <div>
-              <h1 className="text-xl font-bold tracking-tight">Setting Bengkel Qu</h1>
-              <p className="text-xs text-emerald-100 font-medium">
-                Tema, Backup, Restore, Reset & Aktivasi Lisensi
+            <div className="min-w-0">
+              <h1 className="text-xl font-bold tracking-tight truncate">Setting Bengkel Qu</h1>
+              <p className="text-xs text-emerald-100 font-medium truncate">
+                Tema, Backup, Restore, Reset & Lisensi
               </p>
             </div>
           </div>
+
+          {/* Tombol Cepat Log Out Akun Google */}
+          {userSession && onLogout && (
+            <button
+              type="button"
+              onClick={() => setShowLogoutConfirmModal(true)}
+              className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 hover:bg-rose-500/80 active:bg-rose-600 text-white text-xs font-bold transition-all cursor-pointer shadow-xs border border-white/20"
+              title="Keluar / Log Out dari Akun Google"
+            >
+              {userSession.avatar ? (
+                <img
+                  src={userSession.avatar}
+                  alt={userSession.name}
+                  className="w-5 h-5 rounded-full object-cover ring-1 ring-white/60"
+                />
+              ) : (
+                <LogOut className="w-3.5 h-3.5 text-white" />
+              )}
+              <span className="text-[11px]">Log Out</span>
+            </button>
+          )}
         </div>
 
         {/* Tab Switcher Horizontal (Scrollable for compact touch) */}
         <div className="flex items-center gap-1.5 mt-4 bg-emerald-800/50 p-1 rounded-xl text-xs overflow-x-auto scrollbar-none">
+          <button
+            onClick={() => setActiveTab('setting-preset')}
+            className={`flex-1 min-w-[70px] py-1.5 px-2 rounded-lg font-bold transition-all text-center cursor-pointer whitespace-nowrap ${
+              activeTab === 'setting-preset' ? 'bg-white text-[#008952] shadow-xs' : 'text-emerald-100'
+            }`}
+          >
+            Preset Qu
+          </button>
           <button
             onClick={() => setActiveTab('setting-tema')}
             className={`flex-1 min-w-[65px] py-1.5 px-2 rounded-lg font-bold transition-all text-center cursor-pointer whitespace-nowrap ${
@@ -482,6 +517,140 @@ export const SettingView: React.FC<SettingViewProps> = ({
       {/* Main Tab Content */}
       <div className="flex-1 p-4 space-y-4 overflow-y-auto">
         
+        {/* ================= TAB 0: PRESET EKOSISTEM USAHAQU 1.61 ================= */}
+        {activeTab === 'setting-preset' && (
+          <div className="space-y-3 animate-in fade-in">
+            <div className="bg-white rounded-2xl p-4 shadow-xs border border-slate-100">
+              <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-[#008952]" />
+                  <h3 className="font-bold text-slate-900 text-sm">Preset Ekosistem UsahaQu 1.61</h3>
+                </div>
+                <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-50 text-[#008952] border border-emerald-200">
+                  1 Core Engine
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Pilih jenis usaha Anda untuk menyesuaikan Dynamic Label secara otomatis (Istilah Servis/Pesanan/Tindakan, Stok Barang, dan Alur Kasir) tanpa mengubah kestabilan database.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              {(Object.keys(BUSINESS_PRESETS) as BusinessPresetType[]).map((presetKey) => {
+                const preset = BUSINESS_PRESETS[presetKey];
+                const isSelected = (profile.selectedPreset || 'bengkelqu') === presetKey;
+
+                return (
+                  <div
+                    key={preset.id}
+                    onClick={() => {
+                      if (onSaveProfile) {
+                        const updated: WorkshopProfile = {
+                          ...profile,
+                          selectedPreset: preset.id,
+                          workshopName: profile.workshopName.includes('Qu') ? `${preset.appName} Berkah Jaya` : profile.workshopName
+                        };
+                        onSaveProfile(updated);
+                        localStorage.setItem('bq_profile', JSON.stringify(updated));
+                      }
+                    }}
+                    className={`bg-white rounded-2xl p-4 shadow-xs border transition-all cursor-pointer ${
+                      isSelected
+                        ? 'border-[#008952] ring-2 ring-emerald-500/20 shadow-md'
+                        : 'border-slate-100 hover:border-emerald-200'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-start gap-3">
+                        <div
+                          className="w-11 h-11 rounded-2xl shadow-xs flex items-center justify-center text-white font-black text-sm shrink-0 mt-0.5"
+                          style={{ backgroundColor: preset.colorTheme }}
+                        >
+                          {preset.badgeCode}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-bold text-slate-900 text-sm">{preset.appName}</h4>
+                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">
+                              {preset.categoryName}
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-500 mt-0.5">{preset.tagline}</p>
+                        </div>
+                      </div>
+
+                      <div className="shrink-0">
+                        {isSelected ? (
+                          <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-[#008952] border border-emerald-200 flex items-center gap-1">
+                            <Check className="w-3 h-3" />
+                            <span>Aktif</span>
+                          </span>
+                        ) : (
+                          <button
+                            type="button"
+                            className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-slate-100 hover:bg-emerald-50 hover:text-[#008952] text-slate-600 transition-colors"
+                          >
+                            Pilih
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Flow & Labels Preview Pills */}
+                    <div className="mt-3 pt-3 border-t border-slate-100 space-y-2">
+                      <div className="grid grid-cols-2 gap-2 text-[11px]">
+                        <div className="bg-slate-50 rounded-lg p-2">
+                          <span className="text-slate-400 block text-[9.5px] uppercase font-bold">Modul Inti:</span>
+                          <span className="font-bold text-slate-800">{preset.labels.serviceModule}</span>
+                        </div>
+                        <div className="bg-slate-50 rounded-lg p-2">
+                          <span className="text-slate-400 block text-[9.5px] uppercase font-bold">Identitas Unit:</span>
+                          <span className="font-bold text-slate-800">{preset.labels.unitIdentifier}</span>
+                        </div>
+                        <div className="bg-slate-50 rounded-lg p-2">
+                          <span className="text-slate-400 block text-[9.5px] uppercase font-bold">Komponen / Stok:</span>
+                          <span className="font-bold text-slate-800">{preset.labels.itemOrPart}</span>
+                        </div>
+                        <div className="bg-slate-50 rounded-lg p-2">
+                          <span className="text-slate-400 block text-[9.5px] uppercase font-bold">Operator:</span>
+                          <span className="font-bold text-slate-800">{preset.labels.operatorOrStaff}</span>
+                        </div>
+                      </div>
+
+                      {/* 5-Step Work Order Flow */}
+                      <div className="bg-emerald-50/50 rounded-xl p-2.5 border border-emerald-100/60">
+                        <span className="text-[10px] font-bold text-emerald-800 uppercase block mb-1.5">
+                          Alur 5 Langkah (Work Order Flow):
+                        </span>
+                        <div className="flex flex-wrap items-center gap-1 text-[10px] text-slate-700 font-medium">
+                          <span className="px-1.5 py-0.5 rounded bg-white border border-emerald-200/80 shadow-2xs">{preset.labels.flowStep1}</span>
+                          <span className="text-emerald-500 font-bold">→</span>
+                          <span className="px-1.5 py-0.5 rounded bg-white border border-emerald-200/80 shadow-2xs">{preset.labels.flowStep2}</span>
+                          <span className="text-emerald-500 font-bold">→</span>
+                          <span className="px-1.5 py-0.5 rounded bg-white border border-emerald-200/80 shadow-2xs">{preset.labels.flowStep3}</span>
+                          <span className="text-emerald-500 font-bold">→</span>
+                          <span className="px-1.5 py-0.5 rounded bg-white border border-emerald-200/80 shadow-2xs">{preset.labels.flowStep4}</span>
+                          <span className="text-emerald-500 font-bold">→</span>
+                          <span className="px-1.5 py-0.5 rounded bg-white border border-emerald-200/80 shadow-2xs font-bold text-[#008952]">{preset.labels.flowStep5}</span>
+                        </div>
+                      </div>
+
+                      {/* Specific Feature */}
+                      <div className="text-[11px] text-slate-600 flex items-start gap-1.5 pt-0.5">
+                        <Sparkles className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
+                        <div>
+                          <strong className="text-slate-800">{preset.labels.specificFeatureTitle}:</strong>{' '}
+                          <span>{preset.labels.specificFeatureDesc}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* ================= TAB 1: TEMA ================= */}
         {activeTab === 'setting-tema' && (
           <div className="space-y-3 animate-in fade-in">
@@ -784,27 +953,50 @@ export const SettingView: React.FC<SettingViewProps> = ({
               </button>
             </div>
 
-            {/* Info Akun Google */}
+            {/* Info Akun Google Terhubung */}
             {userSession && (
               <div className="bg-white rounded-2xl p-4 shadow-xs border border-slate-100 space-y-3">
                 <div className="flex items-center justify-between pb-2 border-b border-slate-100 text-xs">
-                  <span className="font-bold text-slate-800">Akun Google Terhubung</span>
-                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
-                    {userSession.role}
+                  <div className="flex items-center gap-2">
+                    <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+                      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+                      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+                    </svg>
+                    <span className="font-bold text-slate-800">Akun Google Terhubung</span>
+                  </div>
+                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                    {userSession.role} Aktif
                   </span>
                 </div>
-                <div className="flex items-center justify-between text-xs">
-                  <div>
-                    <span className="font-bold text-slate-900 block">{userSession.name}</span>
-                    <span className="text-[11px] text-slate-500 font-mono">{userSession.email}</span>
+                <div className="flex items-center justify-between gap-3 text-xs">
+                  <div className="flex items-center gap-3 min-w-0">
+                    {userSession.avatar ? (
+                      <img
+                        src={userSession.avatar}
+                        alt={userSession.name}
+                        className="w-10 h-10 rounded-full object-cover ring-2 ring-emerald-500/20 shrink-0"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-emerald-100 text-[#008952] font-black flex items-center justify-center shrink-0 text-sm">
+                        {userSession.name ? userSession.name[0] : 'G'}
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <span className="font-bold text-slate-900 block truncate">{userSession.name}</span>
+                      <span className="text-[11px] text-slate-500 font-mono block truncate">{userSession.email}</span>
+                      <span className="text-[10px] text-slate-400 block mt-0.5">Sesi login: {userSession.loginTime || 'Aktif'}</span>
+                    </div>
                   </div>
                   {onLogout && (
                     <button
                       type="button"
-                      onClick={onLogout}
-                      className="bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-700 font-bold px-3 py-1.5 rounded-xl text-xs transition-colors cursor-pointer"
+                      onClick={() => setShowLogoutConfirmModal(true)}
+                      className="shrink-0 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold px-3 py-2 rounded-xl text-xs transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs"
                     >
-                      Keluar / Logout
+                      <LogOut className="w-3.5 h-3.5" />
+                      <span>Log Out</span>
                     </button>
                   )}
                 </div>
@@ -880,7 +1072,7 @@ export const SettingView: React.FC<SettingViewProps> = ({
               </label>
 
               <div className="grid grid-cols-3 gap-2">
-                {/* Basic (Freemium) */}
+                {/* Basic (Free Lifetime - Rp 0) */}
                 <button
                   type="button"
                   onClick={() => setSelectedTier('basic')}
@@ -892,18 +1084,18 @@ export const SettingView: React.FC<SettingViewProps> = ({
                 >
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="font-extrabold text-xs text-slate-900">Basic (Freemium)</span>
+                      <span className="font-extrabold text-xs text-slate-900 leading-tight">Basic (Free Lifetime)</span>
                       <Users className="w-3.5 h-3.5 text-blue-600 shrink-0" />
                     </div>
-                    <span className="text-[10px] text-slate-500 block leading-tight">Gratis / Kasir Dasar</span>
+                    <span className="text-[10px] text-slate-500 block leading-tight">Solo Mode Gratis</span>
                   </div>
                   <div className="mt-2.5 pt-1.5 border-t border-slate-100">
-                    <span className="font-mono text-xs font-black text-blue-700 block">Gratis (Rp 0)</span>
-                    <span className="text-[9px] text-slate-400">Kasir Dasar Selamanya</span>
+                    <span className="font-mono text-xs font-black text-blue-700 block">Rp 0</span>
+                    <span className="text-[9px] text-slate-400">Gratis Selamanya</span>
                   </div>
                 </button>
 
-                {/* Core / Pro */}
+                {/* PRO (Rp 1.000 / Hari) */}
                 <button
                   type="button"
                   onClick={() => setSelectedTier('core')}
@@ -914,14 +1106,14 @@ export const SettingView: React.FC<SettingViewProps> = ({
                   }`}
                 >
                   <span className="absolute -top-2 right-2 bg-amber-400 text-amber-950 font-black text-[8px] px-1.5 py-0.2 rounded-full shadow-2xs">
-                    Rekomendasi
+                    Paling Populer
                   </span>
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="font-extrabold text-xs text-slate-900">Core / Pro</span>
-                      <ShieldAlert className="w-3.5 h-3.5 text-[#008952] shrink-0" />
+                      <span className="font-extrabold text-xs text-slate-900 leading-tight">PRO</span>
+                      <ShieldCheck className="w-3.5 h-3.5 text-[#008952] shrink-0" />
                     </div>
-                    <span className="text-[10px] text-slate-500 block leading-tight">Profil, PIN Owner, Audit 24 Kolom, Tautkan HP</span>
+                    <span className="text-[10px] text-slate-500 block leading-tight">Staff, CRM, Audit 24 Kolom</span>
                   </div>
                   <div className="mt-2.5 pt-1.5 border-t border-slate-100">
                     <span className="font-mono text-xs font-black text-[#008952] block">Rp 1.000</span>
@@ -929,7 +1121,7 @@ export const SettingView: React.FC<SettingViewProps> = ({
                   </div>
                 </button>
 
-                {/* Add-On (+1 Cabang) */}
+                {/* Add-On (+1 Cabang Baru): Rp 1.000 / Hari */}
                 <button
                   type="button"
                   onClick={() => {
@@ -946,14 +1138,14 @@ export const SettingView: React.FC<SettingViewProps> = ({
                 >
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="font-extrabold text-xs text-slate-900">Add-On (+1 Cabang)</span>
+                      <span className="font-extrabold text-xs text-slate-900 leading-tight">Add-On Cabang</span>
                       <Building2 className="w-3.5 h-3.5 text-purple-600 shrink-0" />
                     </div>
-                    <span className="text-[10px] text-slate-500 block leading-tight">Rp1.000 / Hari per Cabang</span>
+                    <span className="text-[10px] text-slate-500 block leading-tight">Slot Cabang Baru</span>
                   </div>
                   <div className="mt-2.5 pt-1.5 border-t border-slate-100">
-                    <span className="font-mono text-xs font-black text-purple-700 block">+1 Cabang</span>
-                    <span className="text-[9px] text-slate-400">Trial 10 Hari Auto-ON</span>
+                    <span className="font-mono text-xs font-black text-purple-700 block">Rp 1.000</span>
+                    <span className="text-[9px] text-slate-400">per hari</span>
                   </div>
                 </button>
               </div>
@@ -1466,6 +1658,68 @@ export const SettingView: React.FC<SettingViewProps> = ({
           </div>
         );
       })()}
+
+      {/* MODAL KONFIRMASI LOG OUT */}
+      {showLogoutConfirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
+          <div className="bg-white rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl border border-slate-100 p-6 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center">
+                  <LogOut className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-sm text-slate-900">Konfirmasi Log Out</h3>
+                  <p className="text-[11px] text-slate-400">Putuskan Akun & Bersihkan Sesi</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowLogoutConfirmModal(false)}
+                className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-2 text-xs text-slate-600">
+              <p>
+                Apakah Anda yakin ingin keluar dari akun Google{' '}
+                <strong className="text-slate-900 font-semibold">{userSession?.email}</strong>?
+              </p>
+              <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-[11px] space-y-1">
+                <span className="font-bold block">Tindakan Keamanan:</span>
+                <ul className="list-disc list-inside space-y-0.5 text-amber-800">
+                  <li>Menjalankan GoogleSignIn().signOut()</li>
+                  <li>Membersihkan seluruh session token & cache lokal</li>
+                  <li>Reset total navigation stack kembali ke Layar Login</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowLogoutConfirmModal(false)}
+                className="flex-1 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowLogoutConfirmModal(false);
+                  if (onLogout) onLogout();
+                }}
+                className="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xs cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span>Ya, Keluar Akun</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

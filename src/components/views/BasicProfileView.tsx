@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Save, CheckCircle2, Store, User, MapPin, Phone, Mail, Sparkles } from 'lucide-react';
 import { WorkshopProfile } from '../../types';
+import { AppLogo } from '../common/AppLogo';
 
 interface BasicProfileViewProps {
   onBack: () => void;
@@ -69,18 +70,102 @@ export const BasicProfileView: React.FC<BasicProfileViewProps> = ({
             </div>
           </div>
 
-          {/* 1. Nama Bengkel */}
+          {/* Info Foto Profil Google jika login dengan Google */}
+          {formData.photoUrl && (
+            <div className="flex items-center gap-3 p-3 bg-emerald-50/70 border border-emerald-200/80 rounded-2xl">
+              <img
+                src={formData.photoUrl}
+                alt="Foto Profil Google"
+                className="w-11 h-11 rounded-full object-cover ring-2 ring-emerald-500/20 shadow-xs"
+              />
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-bold text-slate-800">Foto Profil Google</span>
+                  <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-200 text-emerald-900">
+                    Tersinkronisasi
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-500 truncate">
+                  Diisi otomatis dari Akun Google: {formData.email}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Preset Ekosistem UsahaQu 1.61 */}
+          <div className="bg-emerald-50/60 border border-emerald-200/80 rounded-2xl p-3.5 space-y-2.5">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-[#008952]" />
+                Preset Ekosistem Usaha (Universal Engine)
+              </span>
+              <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-[#008952]">
+                1 Core Engine
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-500 leading-snug">
+              Pilih jenis usaha untuk menyesuaikan Dynamic Label (Servis, Kasir, Stok) & alur kerja operasional secara instan:
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+              {[
+                { id: 'bengkelqu', label: 'BengkelQu', category: 'Jasa Otomotif & Servis', badge: 'BQ', defaultName: 'BengkelQu Motor Berkah Jaya' },
+                { id: 'kedaiqu', label: 'KedaiQu', category: 'Kuliner & F&B / Cafe / Warung', badge: 'KQ', defaultName: 'KedaiQu Kopi & Dapur Berkah' },
+                { id: 'ritelqu', label: 'RitelQu', category: 'Toko, Minimarket & Grosir', badge: 'RQ', defaultName: 'RitelQu Mart & Toko Berkah' },
+                { id: 'klinikqu', label: 'KlinikQu', category: 'Jasa Medis, Apotek & Rawat', badge: 'KLQ', defaultName: 'KlinikQu Medika & Apotek Sehat' },
+                { id: 'titipqu', label: 'TitipQu', category: 'Konsinyasi & Titip Jual', badge: 'TQ', defaultName: 'TitipQu Konsinyasi & Mart Titip' }
+              ].map((item) => {
+                const isSelected = (formData.selectedPreset || 'bengkelqu') === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => {
+                      setFormData({
+                        ...formData,
+                        selectedPreset: item.id as any,
+                        workshopName: formData.workshopName.includes('Qu') ? item.defaultName : formData.workshopName
+                      });
+                    }}
+                    className={`text-left p-2.5 rounded-xl border transition-all flex items-center gap-2.5 cursor-pointer ${
+                      isSelected
+                        ? 'bg-white border-[#008952] shadow-xs ring-2 ring-emerald-500/20'
+                        : 'bg-white/80 border-slate-200/80 hover:bg-white text-slate-600'
+                    }`}
+                  >
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-black text-xs shrink-0 ${
+                      isSelected ? 'bg-[#008952] text-white shadow-xs' : 'bg-slate-100 text-slate-600'
+                    }`}>
+                      {item.badge}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between">
+                        <span className={`text-xs font-bold leading-tight ${isSelected ? 'text-[#008952]' : 'text-slate-800'}`}>
+                          {item.label}
+                        </span>
+                        {isSelected && <CheckCircle2 className="w-3.5 h-3.5 text-[#008952]" />}
+                      </div>
+                      <span className="text-[10px] text-slate-500 block truncate leading-tight">
+                        {item.category}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 1. Nama Usaha / Bengkel */}
           <div>
             <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5 mb-1.5">
               <Store className="w-3.5 h-3.5 text-[#008952]" />
-              Nama Bengkel *
+              Nama Usaha / Toko *
             </label>
             <input
               type="text"
               required
               value={formData.workshopName}
               onChange={(e) => setFormData({ ...formData, workshopName: e.target.value })}
-              placeholder="Contoh: Bengkel Qu Motor Berkah Jaya"
+              placeholder="Contoh: BengkelQu Motor Berkah Jaya"
               className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20"
             />
           </div>
@@ -162,17 +247,25 @@ export const BasicProfileView: React.FC<BasicProfileViewProps> = ({
           </div>
         </form>
 
-        {/* Preview Card Struk / Nota Letterhead */}
+        {/* Preview Card Struk / Nota Letterhead dengan AppLogo Dinamis */}
         <div className="bg-white rounded-2xl p-4 border border-dashed border-emerald-300 shadow-xs space-y-2">
           <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 block">
-            Pratinjau KOP Nota & Struk Kasir:
+            Pratinjau KOP Nota & Logo Usaha Dinamis:
           </span>
-          <div className="bg-slate-50 rounded-xl p-3 text-center space-y-0.5">
-            <h4 className="font-extrabold text-xs text-slate-900 uppercase">{formData.workshopName}</h4>
-            <p className="text-[11px] text-slate-600">{formData.address}</p>
-            <p className="text-[10px] text-slate-500">
-              Pemilik: {formData.ownerName} • WA: {formData.phone} • {formData.email}
-            </p>
+          <div className="bg-slate-50 rounded-xl p-3 flex items-center gap-3">
+            <AppLogo
+              name={formData.workshopName}
+              variant="auto"
+              shape="rounded"
+              size="md"
+            />
+            <div className="min-w-0 flex-1 text-left space-y-0.5">
+              <h4 className="font-extrabold text-xs text-slate-900 uppercase truncate">{formData.workshopName}</h4>
+              <p className="text-[11px] text-slate-600 truncate">{formData.address}</p>
+              <p className="text-[10px] text-slate-500 truncate">
+                Pemilik: {formData.ownerName} • WA: {formData.phone}
+              </p>
+            </div>
           </div>
         </div>
       </div>

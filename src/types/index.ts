@@ -218,6 +218,8 @@ export interface WorkshopProfile {
   ownerName: string;
   phone: string;
   email: string;
+  photoUrl?: string;
+  selectedPreset?: 'bengkelqu' | 'kedaiqu' | 'ritelqu' | 'klinikqu' | 'titipqu';
 }
 
 export interface RolePermissionConfig {
@@ -259,11 +261,11 @@ export enum PackageTierEnum {
 }
 
 export const PACKAGE_TIER_NAMES: Record<string, string> = {
-  basic: 'Basic (Freemium)',
-  core: 'Core / Pro',
-  addon_branch: 'Add-On (+1 Cabang)',
-  AddOnBranch: 'Add-On (+1 Cabang)',
-  corporate: 'Add-On (+1 Cabang)'
+  basic: 'Basic (Free Lifetime - Rp 0)',
+  core: 'PRO (Rp 1.000 / Hari)',
+  addon_branch: 'Add-On (+1 Cabang Baru): Rp 1.000 / Hari',
+  AddOnBranch: 'Add-On (+1 Cabang Baru): Rp 1.000 / Hari',
+  corporate: 'Add-On (+1 Cabang Baru): Rp 1.000 / Hari'
 };
 
 export type ProDurationOption = 1 | 3 | 6 | 12;

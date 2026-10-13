@@ -9,13 +9,14 @@ import {
   DamagedGood, 
   ProcurementRecord,
   MarketingCampaign,
-  PromoVoucher
+  PromoVoucher,
+  WorkshopProfile
 } from '../types';
 
 export const MENU_MODULES: MenuModuleConfig[] = [
   {
     id: 'servis',
-    title: 'Service',
+    title: 'Servis',
     subtitle: 'Manajemen Servis & Antrian',
     iconName: 'Wrench',
     badgeCount: '4 Aktif',
@@ -117,7 +118,7 @@ export const MENU_MODULES: MenuModuleConfig[] = [
   },
   {
     id: 'inventaris',
-    title: 'Inventaris',
+    title: 'Stok',
     subtitle: 'Suku Cadang & Stok',
     iconName: 'Package',
     badgeCount: '3 Kritis',
@@ -400,12 +401,13 @@ export const MENU_MODULES: MenuModuleConfig[] = [
   }
 ];
 
-export const INITIAL_PROFILE = {
+export const INITIAL_PROFILE: WorkshopProfile = {
   workshopName: 'Bengkel Qu Motor Berkah Jaya',
   address: 'Jl. Otto Iskandardinata No. 128, Sukajadi, Kota Bandung, Jawa Barat 40161',
   ownerName: 'Bpk. Ahmad Fauzi Rachman, S.T.',
   phone: '0812-3456-7890',
-  email: 'kontak@bengkelqu-bandung.com'
+  email: 'kontak@bengkelqu-bandung.com',
+  selectedPreset: 'bengkelqu'
 };
 
 export const INITIAL_PERMISSIONS = [

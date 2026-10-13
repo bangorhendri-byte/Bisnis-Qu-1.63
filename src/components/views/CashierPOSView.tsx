@@ -27,7 +27,8 @@ import {
   Layers,
   Sparkles
 } from 'lucide-react';
-import { ServiceItem, Sparepart, Transaction, ServiceQueue, ExpenseItem, PettyCashConfig, ClosingRecord, ServiceStatus } from '../../types';
+import { ServiceItem, Sparepart, Transaction, ServiceQueue, ExpenseItem, PettyCashConfig, ClosingRecord, ServiceStatus, WorkshopProfile } from '../../types';
+import { getBusinessPreset, BusinessPresetConfig } from '../../data/businessPresets';
 
 interface CashierPOSViewProps {
   initialTab?: string;
@@ -40,6 +41,7 @@ interface CashierPOSViewProps {
   preselectedQueue?: ServiceQueue | null;
   onUpdateQueueStatus?: (id: string, status: ServiceStatus, progress?: number) => void;
   onAddQueue?: (newQueue: ServiceQueue) => void;
+  profile?: WorkshopProfile;
 }
 
 export const CashierPOSView: React.FC<CashierPOSViewProps> = ({
@@ -52,8 +54,12 @@ export const CashierPOSView: React.FC<CashierPOSViewProps> = ({
   onOpenReceipt,
   preselectedQueue,
   onUpdateQueueStatus,
-  onAddQueue
+  onAddQueue,
+  profile
 }) => {
+  const presetConfig: BusinessPresetConfig = getBusinessPreset(profile?.selectedPreset);
+  const labels = presetConfig.labels;
+
   // Normalize active tab
   const getNormalizedTab = (tab: string) => {
     if (tab === 'pos-checkout' || tab === 'kasir') return 'kasir';
@@ -154,17 +160,17 @@ export const CashierPOSView: React.FC<CashierPOSViewProps> = ({
     localStorage.setItem('bq_kas_kecil', JSON.stringify(expenses));
   }, [expenses]);
 
-  // Dynamic Header Title & Subtitle based on active sub-menu
+  // Dynamic Header Title & Subtitle based on active sub-menu & preset
   const getHeaderMeta = () => {
     switch (activeTab) {
       case 'kasir':
         if (kasirMode === 'checkout' && activeSelectedQueue) {
           return {
-            title: `Kasir • ${activeSelectedQueue.plateNumber}`,
+            title: `${labels.cashierModule} • ${activeSelectedQueue.plateNumber}`,
             subtitle: `Rincian Biaya & Pembayaran (${activeSelectedQueue.queueNumber})`
           };
         }
-        return { title: 'Kasir', subtitle: 'Log Servis Selesai & Pembayaran POS' };
+        return { title: labels.cashierModule, subtitle: `Log ${labels.serviceModule} Selesai & Pembayaran POS` };
       case 'piutang':
         return { title: 'Piutang', subtitle: 'Daftar Tagihan Belum Lunas (Tempo)' };
       case 'riwayat-transaksi':
@@ -176,7 +182,7 @@ export const CashierPOSView: React.FC<CashierPOSViewProps> = ({
       case 'closingan':
         return { title: 'Closingan', subtitle: 'Tutup Kasir & Rekonsiliasi Shift' };
       default:
-        return { title: 'Kasir POS', subtitle: 'Sistem Keuangan Kasir' };
+        return { title: labels.cashierModule, subtitle: 'Sistem Keuangan Kasir' };
     }
   };
 

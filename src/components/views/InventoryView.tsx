@@ -23,7 +23,8 @@ import {
   History,
   FileText
 } from 'lucide-react';
-import { Sparepart, DamagedGood, ProcurementRecord } from '../../types';
+import { Sparepart, DamagedGood, ProcurementRecord, WorkshopProfile } from '../../types';
+import { getBusinessPreset, BusinessPresetConfig } from '../../data/businessPresets';
 
 interface InventoryViewProps {
   initialTab?: string;
@@ -58,6 +59,7 @@ interface InventoryViewProps {
     reportedBy: string;
     notes?: string;
   }) => void;
+  profile?: WorkshopProfile;
 }
 
 export const InventoryView: React.FC<InventoryViewProps> = ({
@@ -69,8 +71,12 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
   onUpdateStock,
   onAddNewPart,
   onSaveInboundStock,
-  onReportDamagedGood
+  onReportDamagedGood,
+  profile
 }) => {
+  const presetConfig: BusinessPresetConfig = getBusinessPreset(profile?.selectedPreset);
+  const labels = presetConfig.labels;
+
   const [activeTab, setActiveTab] = useState<string>(() => {
     // Map legacy ids if needed
     if (initialTab === 'tambah-sparepart') return 'sparepart-datang';
@@ -100,38 +106,38 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
     }
   }, [initialTab]);
 
-  // Dynamic header title and subtitle based on active sub-menu
+  // Dynamic header title and subtitle based on active sub-menu & preset
   const getHeaderMeta = () => {
     switch (activeTab) {
       case 'sparepart-datang':
         return {
-          title: 'Sparepart Datang (Inbound)',
-          subtitle: 'Pintu Masuk Stok Baru & Tambah Qty'
+          title: labels.inboundStockTitle,
+          subtitle: `Pintu Masuk Stok Baru & Tambah ${labels.itemOrPart}`
         };
       case 'katalog-sparepart':
         return {
-          title: 'Katalog Sparepart (Master)',
-          subtitle: 'Master Stok Seluruh Suku Cadang'
+          title: `Katalog ${labels.itemOrPart} (Master)`,
+          subtitle: `Master Stok Seluruh ${labels.itemOrPartPlural}`
         };
       case 'stok-kritis':
         return {
-          title: 'Stok Kritis',
-          subtitle: 'Suku Cadang Menipis di Bawah Minimum'
+          title: labels.criticalStockAlert,
+          subtitle: `${labels.itemOrPart} Menipis di Bawah Minimum`
         };
       case 'barang-rusak':
         return {
-          title: 'Barang Rusak (Damaged)',
-          subtitle: 'Pengajuan & Pencatatan Barang Cacat / Rusak'
+          title: labels.damagedStockTitle,
+          subtitle: `Pencatatan & Pengajuan ${labels.itemOrPart} Rusak / Afkir`
         };
       case 'riwayat-pengadaan':
         return {
           title: 'Riwayat Pengadaan',
-          subtitle: 'Log Pembelian & Penerimaan Barang Suplier'
+          subtitle: `Log Pembelian & Penerimaan ${labels.itemOrPart} dari Suplier`
         };
       default:
         return {
-          title: 'Inventaris & Sparepart',
-          subtitle: 'Tata Kelola Logistik & Gudang Bengkel'
+          title: `${labels.stockModule} & ${labels.itemOrPart}`,
+          subtitle: `Tata Kelola Logistik & Gudang Usaha`
         };
     }
   };

@@ -15,8 +15,8 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
   const tabs = [
     { id: 'dashboard', label: 'Beranda', icon: LayoutDashboard },
     { id: 'servis', label: 'Servis', icon: Wrench, badge: activeQueueCount > 0 ? activeQueueCount : undefined },
-    { id: 'kasir', label: 'Kasir POS', icon: Receipt },
-    { id: 'inventaris', label: 'Inventaris', icon: Package },
+    { id: 'kasir', label: 'Kasir', icon: Receipt },
+    { id: 'inventaris', label: 'Stok', icon: Package },
     { id: 'laporan', label: 'Laporan', icon: BarChart3 }
   ];
 
