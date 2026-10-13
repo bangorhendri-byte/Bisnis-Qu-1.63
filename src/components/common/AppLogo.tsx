@@ -6,10 +6,12 @@ export interface AppLogoProps {
   profile?: WorkshopProfile;
   /** Explicit business / store name */
   name?: string;
-  /** Explicit initials (e.g. 'UQ', 'BQ') */
+  /** Explicit preset to set logo initials directly: 'BengkelQu' | 'KedaiQu' | 'RitelQu' | 'KlinikQu' | 'TitipQu' */
+  preset?: string;
+  /** Explicit initials (e.g. 'UQ', 'BQ', 'KQ', 'RQ', 'KlQ', 'TQ') */
   initials?: string;
-  /** Variant preset when initials cannot be determined: 'UQ' | 'BQ' | 'auto' */
-  variant?: 'UQ' | 'BQ' | 'auto';
+  /** Variant preset when initials cannot be determined */
+  variant?: 'UQ' | 'BQ' | 'KQ' | 'RQ' | 'KlQ' | 'TQ' | 'auto';
   /** Visual shape: 'circle' (round) or 'rounded' (squircle / rounded card) */
   shape?: 'circle' | 'rounded';
   /** Size dimension presets */
@@ -25,7 +27,7 @@ export interface AppLogoProps {
 }
 
 /**
- * Extracts clean, punchy 2-letter initials from a store or business name
+ * Extracts clean, punchy initials from a store or business name
  */
 export function getBusinessInitials(name?: string, fallback: string = 'UQ'): string {
   if (!name || !name.trim()) return fallback;
@@ -36,7 +38,7 @@ export function getBusinessInitials(name?: string, fallback: string = 'UQ'): str
   if (/^bengkel\s*qu/i.test(clean) || /bengkel/i.test(clean)) return 'BQ';
   if (/^kedai\s*qu/i.test(clean) || /kedai/i.test(clean) || /cafe/i.test(clean) || /kopi/i.test(clean)) return 'KQ';
   if (/^ritel\s*qu/i.test(clean) || /ritel/i.test(clean) || /toko/i.test(clean) || /mart/i.test(clean)) return 'RQ';
-  if (/^klinik\s*qu/i.test(clean) || /klinik/i.test(clean) || /apotek/i.test(clean) || /medika/i.test(clean)) return 'KLQ';
+  if (/^klinik\s*qu/i.test(clean) || /klinik/i.test(clean) || /apotek/i.test(clean) || /medika/i.test(clean)) return 'KlQ';
   if (/^titip\s*qu/i.test(clean) || /titip/i.test(clean) || /konsinyasi/i.test(clean)) return 'TQ';
   if (/^usaha\s*qu/i.test(clean) || /usaha/i.test(clean)) return 'UQ';
 
@@ -54,9 +56,23 @@ export function getBusinessInitials(name?: string, fallback: string = 'UQ'): str
   return fallback;
 }
 
+/**
+ * Maps a preset string to its signature initials badge
+ */
+export function getPresetBadge(preset?: string | null): string {
+  if (!preset) return 'BQ';
+  const clean = preset.toLowerCase();
+  if (clean.includes('kedai')) return 'KQ';
+  if (clean.includes('ritel') || clean.includes('retail') || clean.includes('toko')) return 'RQ';
+  if (clean.includes('klinik') || clean.includes('medika') || clean.includes('apotek')) return 'KlQ';
+  if (clean.includes('titip') || clean.includes('konsinyasi')) return 'TQ';
+  return 'BQ';
+}
+
 export const AppLogo: React.FC<AppLogoProps> = ({
   profile,
   name,
+  preset,
   initials,
   variant = 'auto',
   shape = 'rounded',
@@ -69,9 +85,13 @@ export const AppLogo: React.FC<AppLogoProps> = ({
   // Resolve business name dynamically from profile or fallback
   const storeName = name || profile?.workshopName || 'UsahaQu Bengkel';
 
-  // Resolve dynamic initials
-  const fallbackVariant = variant === 'BQ' ? 'BQ' : 'UQ';
-  const displayInitials = initials || (variant === 'UQ' ? 'UQ' : variant === 'BQ' ? 'BQ' : getBusinessInitials(storeName, fallbackVariant));
+  // Resolve dynamic initials from preset, explicit prop, or storeName
+  const activePresetKey = preset || profile?.selectedPreset;
+  const displayInitials = initials || (
+    activePresetKey ? getPresetBadge(activePresetKey) :
+    variant !== 'auto' && variant !== 'UQ' ? variant :
+    getBusinessInitials(storeName, variant === 'UQ' ? 'UQ' : 'BQ')
+  );
 
   // Size styling maps
   const sizeClasses = {

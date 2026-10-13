@@ -9,13 +9,15 @@ interface SubMenuPageProps {
   onBack: () => void;
   onSelectSubMenu: (subItem: SubMenuItemConfig) => void;
   activeSubMenuId?: string;
+  activePreset?: string;
 }
 
 export const SubMenuPage: React.FC<SubMenuPageProps> = ({
   module,
   onBack,
   onSelectSubMenu,
-  activeSubMenuId
+  activeSubMenuId,
+  activePreset = 'BengkelQu'
 }) => {
   return (
     <div className="flex-1 bg-white flex flex-col">
@@ -57,7 +59,7 @@ export const SubMenuPage: React.FC<SubMenuPageProps> = ({
       {/* Footer hint */}
       <div className="py-3 px-4 text-center bg-slate-50 border-t border-slate-100 text-[11px] text-slate-400 flex items-center justify-center gap-1.5">
         <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-        <span>UsahaQu 1.61 • Presets BengkelQu Terintegrasi</span>
+        <span>USAHAQU 1.61 • {activePreset}</span>
       </div>
     </div>
   );

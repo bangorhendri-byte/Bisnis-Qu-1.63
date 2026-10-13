@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Plus, 
   Sparkles,
@@ -10,6 +10,12 @@ import { IconRenderer } from '../common/IconRenderer';
 import { SafeArea } from '../common/SafeArea';
 import { AppLogo } from '../common/AppLogo';
 import { getBusinessPreset } from '../../data/businessPresets';
+import { 
+  ActivePreset, 
+  getPresetMeta, 
+  normalizePreset 
+} from '../../utils/presetManager';
+import { ModuleSwitcherModal } from './ModuleSwitcherModal';
 
 interface HomeDashboardProps {
   modules: MenuModuleConfig[];
@@ -21,6 +27,8 @@ interface HomeDashboardProps {
   onSelectQueueItem: (queue: ServiceQueue) => void;
   onQuickSearchPlat?: (query: string) => void;
   profile?: WorkshopProfile;
+  activePreset?: ActivePreset;
+  onSelectPreset?: (preset: ActivePreset) => void;
   userSession?: UserSession | null;
   onLogout?: () => void;
   subscription?: SubscriptionState;
@@ -34,11 +42,17 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   onOpenNewQueue,
   onSelectQueueItem,
   profile,
+  activePreset = 'BengkelQu',
+  onSelectPreset,
   subscription,
   onOpenSubscription
 }) => {
-  const preset = getBusinessPreset(profile?.selectedPreset);
-  const labels = preset.labels;
+  const [isSwitcherOpen, setIsSwitcherOpen] = useState(false);
+  // Resolve canonical activePreset and preset metadata
+  const currentActivePreset = normalizePreset(activePreset || profile?.selectedPreset);
+  const presetMeta = getPresetMeta(currentActivePreset);
+  const businessPreset = getBusinessPreset(presetMeta.id);
+  const labels = businessPreset.labels;
 
   // Workshop quick stats
   const waitingCount = queues.filter((q) => q.status === 'menunggu').length;
@@ -46,7 +60,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   const completedCount = queues.filter((q) => q.status === 'selesai').length;
 
   // Nama Toko Dinamis dari State/Database Profil Toko
-  const shopName = profile?.workshopName || 'Bengkel Motor Berkah Jaya';
+  const shopName = profile?.workshopName || presetMeta.sampleShopName;
 
   return (
     <div className="flex-1 bg-slate-50 pb-6">
@@ -63,25 +77,49 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
           <div className="absolute -left-10 -top-10 w-32 h-32 rounded-full bg-white/5 pointer-events-none" />
 
           <div className="relative z-10 flex items-center justify-between gap-3">
-            {/* Logo 'BQ' / 'UQ' & Nama Toko Dinamis (Halo, [Nama_Toko_Sesuai_Setting]) */}
+            {/* Interactive Clickable Logo Switcher ('BQ' / 'KQ' / 'RQ' / 'KlQ' / 'TQ') */}
             <div className="flex items-center gap-3 min-w-0">
-              <AppLogo
-                profile={profile}
-                name={shopName}
-                variant="BQ"
-                shape="circle"
-                size="md"
-                inverted={true}
-              />
-              <div className="min-w-0">
-                <span className="text-[10px] font-medium text-emerald-100 uppercase tracking-wider block">
-                  UsahaQu 1.61 • BengkelQu
+              <button
+                type="button"
+                onClick={() => setIsSwitcherOpen(true)}
+                title="Klik untuk memilih Modul Aktif UsahaQu"
+                className="relative group focus:outline-none cursor-pointer shrink-0 transition-transform active:scale-95"
+              >
+                <AppLogo
+                  profile={profile}
+                  name={shopName}
+                  preset={currentActivePreset}
+                  initials={presetMeta.logoBadge}
+                  shape="circle"
+                  size="md"
+                  inverted={true}
+                  className="group-hover:ring-2 group-hover:ring-amber-300 transition-all shadow-md"
+                />
+                {/* Interactive Clickable Badge Indicator */}
+                <span className="absolute -bottom-1 -right-1 bg-amber-400 text-slate-900 text-[9px] font-black w-4.5 h-4.5 rounded-full flex items-center justify-center shadow-md border-2 border-[#008952] group-hover:bg-amber-300 transition-colors">
+                  ⇄
                 </span>
-                <h2 className="text-base sm:text-lg font-bold text-white tracking-tight leading-tight truncate">
+              </button>
+
+              <div 
+                onClick={() => setIsSwitcherOpen(true)}
+                className="min-w-0 cursor-pointer group"
+                title="Klik untuk ganti modul aktif"
+              >
+                {/* Format Jelas: USAHAQU 1.61 • [ activePreset ] */}
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="text-[10px] font-extrabold text-emerald-100 uppercase tracking-wider block group-hover:text-amber-200 transition-colors">
+                    USAHAQU 1.61 • {currentActivePreset}
+                  </span>
+                  <span className="text-[9px] font-bold bg-emerald-800/90 text-amber-200 px-1.5 py-0.5 rounded-full border border-emerald-400/40 group-hover:bg-amber-400 group-hover:text-slate-900 transition-colors">
+                    Ganti ▼
+                  </span>
+                </div>
+                <h2 className="text-base sm:text-lg font-bold text-white tracking-tight leading-tight truncate group-hover:text-emerald-50">
                   Halo, {shopName} 👋
                 </h2>
                 <p className="text-[11px] text-emerald-100/90 font-medium truncate">
-                  {profile?.ownerName ? `Owner: ${profile.ownerName}` : 'Pusat Operasional Bengkel'}
+                  {profile?.ownerName ? `Owner: ${profile.ownerName}` : `Pusat Operasional ${presetMeta.category}`}
                 </p>
               </div>
             </div>
@@ -119,39 +157,54 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                 Rp 2.450.000
               </div>
             </div>
+
+            {/* Dynamic Quick Action Button */}
             <button
               onClick={onOpenNewQueue}
               className="bg-[#008952] hover:bg-emerald-700 active:scale-95 text-white text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-1.5 shadow-sm shadow-emerald-700/20 transition-all cursor-pointer"
             >
               <Plus className="w-4 h-4 stroke-[2.5]" />
-              <span>+ Antrian</span>
+              <span>{presetMeta.quickActionButtonText}</span>
             </button>
           </div>
 
-          {/* Quick Metrics */}
+          {/* Quick Metrics with Dynamic Stat Labels & Unit */}
           <div className="grid grid-cols-3 gap-2 pt-3 text-center">
             <div className="bg-amber-50/70 rounded-xl p-2 border border-amber-100/60">
-              <span className="text-[10px] font-semibold text-amber-700 block">Menunggu</span>
-              <span className="text-base font-extrabold text-amber-800">{waitingCount} Unit</span>
+              <span className="text-[10px] font-semibold text-amber-700 block">
+                {presetMeta.statLabels.waiting}
+              </span>
+              <span className="text-base font-extrabold text-amber-800">
+                {waitingCount} {presetMeta.statUnitLabel}
+              </span>
             </div>
             <div className="bg-blue-50/70 rounded-xl p-2 border border-blue-100/60">
-              <span className="text-[10px] font-semibold text-blue-700 block">Dikerjakan</span>
-              <span className="text-base font-extrabold text-blue-800">{inProgressCount} Unit</span>
+              <span className="text-[10px] font-semibold text-blue-700 block">
+                {presetMeta.statLabels.inProgress}
+              </span>
+              <span className="text-base font-extrabold text-blue-800">
+                {inProgressCount} {presetMeta.statUnitLabel}
+              </span>
             </div>
             <div className="bg-emerald-50/70 rounded-xl p-2 border border-emerald-100/60">
-              <span className="text-[10px] font-semibold text-[#008952] block">Selesai</span>
-              <span className="text-base font-extrabold text-emerald-800">{completedCount} Unit</span>
+              <span className="text-[10px] font-semibold text-[#008952] block">
+                {presetMeta.statLabels.completed}
+              </span>
+              <span className="text-base font-extrabold text-emerald-800">
+                {completedCount} {presetMeta.statUnitLabel}
+              </span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* 3. MENU UTAMA (Hanya Menampilkan Ikon dan Nama) */}
-      <div className="px-4 mt-5">
+
+      {/* 3. MENU UTAMA (Judul Dinamis & Grid 8 Menu Sesuai Preset) */}
+      <div className="px-4 mt-4">
         <div className="flex items-center justify-between mb-3">
           <div>
             <h3 className="text-sm font-bold text-slate-900 tracking-tight">
-              Menu Utama Bengkel
+              {presetMeta.dashboardTitle}
             </h3>
             <p className="text-[11px] text-slate-500">Pilih menu untuk membuka modul</p>
           </div>
@@ -195,7 +248,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             onClick={() => onSelectModule(modules[0])}
             className="text-[11px] font-bold text-[#008952] hover:underline flex items-center gap-0.5 cursor-pointer"
           >
-            Lihat Semua {labels.serviceModule} <ChevronRight className="w-3.5 h-3.5" />
+            Lihat Semua {presetMeta.menu1Title} <ChevronRight className="w-3.5 h-3.5" />
           </button>
         </div>
 
@@ -259,6 +312,19 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
           ))}
         </div>
       </div>
+
+      {/* Pop-Up Modal / Bottom Sheet: Pilih Modul Aktif UsahaQu */}
+      <ModuleSwitcherModal
+        isOpen={isSwitcherOpen}
+        onClose={() => setIsSwitcherOpen(false)}
+        activePreset={currentActivePreset}
+        onSelectPreset={(newPreset) => {
+          onSelectPreset?.(newPreset);
+        }}
+        subscription={subscription}
+        profile={profile}
+        onOpenSubscription={onOpenSubscription}
+      />
     </div>
   );
 };

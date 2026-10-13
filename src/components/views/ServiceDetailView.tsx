@@ -39,6 +39,7 @@ interface ServiceDetailViewProps {
   spareparts?: Sparepart[];
   mechanics?: Mechanic[];
   profile?: WorkshopProfile;
+  preset?: string;
 }
 
 export const ServiceDetailView: React.FC<ServiceDetailViewProps> = ({
@@ -52,9 +53,10 @@ export const ServiceDetailView: React.FC<ServiceDetailViewProps> = ({
   onResetDailyQueues,
   spareparts = INITIAL_SPAREPARTS,
   mechanics = INITIAL_MECHANICS,
-  profile
+  profile,
+  preset
 }) => {
-  const presetConfig: BusinessPresetConfig = getBusinessPreset(profile?.selectedPreset);
+  const presetConfig: BusinessPresetConfig = getBusinessPreset(preset || profile?.selectedPreset);
   const labels = presetConfig.labels;
 
   // Normalize initialTab to our 5 active sub-menus

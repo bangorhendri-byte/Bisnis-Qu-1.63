@@ -1,20 +1,25 @@
 import React from 'react';
 import { LayoutDashboard, Wrench, Receipt, Package, BarChart3 } from 'lucide-react';
 
+import { getPresetMeta, normalizePreset } from '../../utils/presetManager';
+
 interface BottomNavBarProps {
   currentTab: string;
   onTabChange: (tabId: string) => void;
   activeQueueCount?: number;
+  activePreset?: string;
 }
 
 export const BottomNavBar: React.FC<BottomNavBarProps> = ({
   currentTab,
   onTabChange,
-  activeQueueCount = 4
+  activeQueueCount = 4,
+  activePreset
 }) => {
+  const meta = getPresetMeta(activePreset);
   const tabs = [
     { id: 'dashboard', label: 'Beranda', icon: LayoutDashboard },
-    { id: 'servis', label: 'Servis', icon: Wrench, badge: activeQueueCount > 0 ? activeQueueCount : undefined },
+    { id: 'servis', label: meta.menu1Title || 'Servis', icon: Wrench, badge: activeQueueCount > 0 ? activeQueueCount : undefined },
     { id: 'kasir', label: 'Kasir', icon: Receipt },
     { id: 'inventaris', label: 'Stok', icon: Package },
     { id: 'laporan', label: 'Laporan', icon: BarChart3 }

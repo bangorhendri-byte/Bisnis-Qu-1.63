@@ -108,13 +108,14 @@ export const BasicProfileView: React.FC<BasicProfileViewProps> = ({
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
               {[
-                { id: 'bengkelqu', label: 'BengkelQu', category: 'Jasa Otomotif & Servis', badge: 'BQ', defaultName: 'BengkelQu Motor Berkah Jaya' },
-                { id: 'kedaiqu', label: 'KedaiQu', category: 'Kuliner & F&B / Cafe / Warung', badge: 'KQ', defaultName: 'KedaiQu Kopi & Dapur Berkah' },
-                { id: 'ritelqu', label: 'RitelQu', category: 'Toko, Minimarket & Grosir', badge: 'RQ', defaultName: 'RitelQu Mart & Toko Berkah' },
-                { id: 'klinikqu', label: 'KlinikQu', category: 'Jasa Medis, Apotek & Rawat', badge: 'KLQ', defaultName: 'KlinikQu Medika & Apotek Sehat' },
-                { id: 'titipqu', label: 'TitipQu', category: 'Konsinyasi & Titip Jual', badge: 'TQ', defaultName: 'TitipQu Konsinyasi & Mart Titip' }
+                { id: 'BengkelQu', label: 'BengkelQu', category: 'Jasa Otomotif & Servis', badge: 'BQ', defaultName: 'BengkelQu Motor Berkah Jaya' },
+                { id: 'KedaiQu', label: 'KedaiQu', category: 'Kuliner & F&B / Cafe / Warung', badge: 'KQ', defaultName: 'KedaiQu Kopi & Dapur Berkah' },
+                { id: 'RitelQu', label: 'RitelQu', category: 'Toko, Minimarket & Grosir', badge: 'RQ', defaultName: 'RitelQu Mart & Toko Berkah' },
+                { id: 'KlinikQu', label: 'KlinikQu', category: 'Jasa Medis, Apotek & Rawat', badge: 'KlQ', defaultName: 'KlinikQu Medika & Apotek Sehat' },
+                { id: 'TitipQu', label: 'TitipQu', category: 'Konsinyasi & Titip Jual', badge: 'TQ', defaultName: 'TitipQu Konsinyasi & Mart Titip' }
               ].map((item) => {
-                const isSelected = (formData.selectedPreset || 'bengkelqu') === item.id;
+                const currentPresetNormalized = (formData.selectedPreset || 'BengkelQu').toLowerCase();
+                const isSelected = currentPresetNormalized === item.id.toLowerCase();
                 return (
                   <button
                     key={item.id}

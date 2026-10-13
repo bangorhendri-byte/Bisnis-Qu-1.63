@@ -51,6 +51,12 @@ import {
   evaluateSubscriptionState,
   activateBranchTrial
 } from './utils/licenseManager';
+import { 
+  ActivePreset, 
+  normalizePreset, 
+  getPresetMeta, 
+  getDynamicModulesForPreset 
+} from './utils/presetManager';
 import { AndroidFrame } from './components/common/AndroidFrame';
 import { BottomNavBar } from './components/common/BottomNavBar';
 import { HomeDashboard } from './components/home/HomeDashboard';
@@ -133,6 +139,55 @@ export default function App() {
     const saved = localStorage.getItem('bq_profile');
     return saved ? JSON.parse(saved) : INITIAL_PROFILE;
   });
+
+  // Active Preset Manager State (Pilihan: 'BengkelQu' | 'KedaiQu' | 'RitelQu' | 'KlinikQu' | 'TitipQu')
+  const [activePreset, setActivePreset] = useState<ActivePreset>(() => {
+    const savedPreset = localStorage.getItem('bq_active_preset');
+    if (savedPreset) return normalizePreset(savedPreset);
+    const savedProfile = localStorage.getItem('bq_profile');
+    if (savedProfile) {
+      try {
+        const parsed = JSON.parse(savedProfile);
+        if (parsed.selectedPreset) return normalizePreset(parsed.selectedPreset);
+      } catch (e) {
+        // ignore
+      }
+    }
+    return normalizePreset(INITIAL_PROFILE.selectedPreset);
+  });
+
+  // Dynamic 8 Modules configured to active preset in real-time
+  const dynamicModules = React.useMemo(() => {
+    return getDynamicModulesForPreset(activePreset, MENU_MODULES);
+  }, [activePreset]);
+
+  // Handler to switch preset instantly from Dashboard or Profil
+  const handleSelectPreset = (newPreset: ActivePreset) => {
+    const normalized = normalizePreset(newPreset);
+    setActivePreset(normalized);
+    localStorage.setItem('bq_active_preset', normalized);
+    const meta = getPresetMeta(normalized);
+    setProfile((prev) => {
+      const updated: WorkshopProfile = {
+        ...prev,
+        selectedPreset: normalized,
+        workshopName: prev.workshopName.includes('Qu') ? meta.sampleShopName : prev.workshopName
+      };
+      localStorage.setItem('bq_profile', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  // Handler to save profile and keep preset in sync
+  const handleSaveProfile = (updated: WorkshopProfile) => {
+    if (updated.selectedPreset) {
+      const normalized = normalizePreset(updated.selectedPreset);
+      setActivePreset(normalized);
+      localStorage.setItem('bq_active_preset', normalized);
+    }
+    setProfile(updated);
+    localStorage.setItem('bq_profile', JSON.stringify(updated));
+  };
 
   const [permissions, setPermissions] = useState<RolePermissionConfig[]>(() => {
     const saved = localStorage.getItem('bq_permissions');
@@ -452,7 +507,7 @@ export default function App() {
     if (tabId === 'dashboard') {
       handleGoHome();
     } else {
-      const targetMod = MENU_MODULES.find((m) => m.id === tabId);
+      const targetMod = dynamicModules.find((m) => m.id === tabId) || MENU_MODULES.find((m) => m.id === tabId);
       if (targetMod) {
         setSelectedModule(targetMod);
         setCurrentScreen('submenu');
@@ -777,14 +832,14 @@ export default function App() {
     if (currentScreen === 'dashboard') {
       return (
         <HomeDashboard
-          modules={MENU_MODULES}
+          modules={dynamicModules}
           onSelectModule={handleSelectModule}
           queues={queues}
           onOpenNewQueue={() => setIsNewQueueModalOpen(true)}
           onOpenNotifications={() => setIsNotifDrawerOpen(true)}
           unreadNotifsCount={unreadNotifsCount}
           onSelectQueueItem={(q) => {
-            const servMod = MENU_MODULES.find((m) => m.id === 'servis');
+            const servMod = dynamicModules.find((m) => m.id === 'servis') || MENU_MODULES.find((m) => m.id === 'servis');
             if (servMod) {
               setSelectedModule(servMod);
               setSelectedSubMenu(servMod.subMenus[0]);
@@ -793,6 +848,8 @@ export default function App() {
           }}
           onQuickSearchPlat={handleQuickSearchPlat}
           profile={profile}
+          activePreset={activePreset}
+          onSelectPreset={handleSelectPreset}
           userSession={userSession}
           onLogout={handleLogout}
           subscription={subscription}
@@ -802,12 +859,14 @@ export default function App() {
     }
 
     if (currentScreen === 'submenu' && selectedModule) {
+      const activeMod = dynamicModules.find((m) => m.id === selectedModule.id) || selectedModule;
       return (
         <SubMenuPage
-          module={selectedModule}
+          module={activeMod}
           onBack={handleBack}
           onSelectSubMenu={handleSelectSubMenu}
           activeSubMenuId={selectedSubMenu?.id}
+          activePreset={activePreset}
         />
       );
     }
@@ -828,6 +887,7 @@ export default function App() {
               spareparts={spareparts}
               mechanics={INITIAL_MECHANICS}
               profile={profile}
+              preset={activePreset}
             />
           );
         case 'kasir':
@@ -1017,7 +1077,7 @@ export default function App() {
               <BasicProfileView
                 onBack={handleBack}
                 profile={profile}
-                onSaveProfile={(updated) => setProfile(updated)}
+                onSaveProfile={handleSaveProfile}
               />
             );
           }
@@ -1095,10 +1155,7 @@ export default function App() {
               onActivateSerialKey={handleActivateSerialKey}
               onActivateBranchTrial={handleActivateBranchTrial}
               onReloadDemoData={() => handleResetData('factory')}
-              onSaveProfile={(updated) => {
-                setProfile(updated);
-                localStorage.setItem('bq_profile', JSON.stringify(updated));
-              }}
+              onSaveProfile={handleSaveProfile}
               onNavigateToDevices={() => {
                 setSelectedSubMenu({
                   id: 'setting-perangkat',
@@ -1152,6 +1209,7 @@ export default function App() {
           currentTab={currentTab}
           onTabChange={handleBottomTabChange}
           activeQueueCount={queues.filter((q) => q.status !== 'diambil').length}
+          activePreset={activePreset}
         />
       }
     >

@@ -208,11 +208,11 @@ export const BUSINESS_PRESETS: Record<BusinessPresetType, BusinessPresetConfig> 
     appName: 'KlinikQu',
     tagline: 'Praktek Dokter, Apotek, Rekam Medis, & Layanan Terintegrasi',
     categoryName: 'Jasa Kesehatan, Apotek & Perawatan',
-    badgeCode: 'KLQ',
+    badgeCode: 'KlQ',
     iconName: 'HeartPulse',
     colorTheme: '#0D9488',
     labels: {
-      serviceModule: 'Pemeriksaan',
+      serviceModule: 'Tindakan',
       serviceSubtitle: 'Pemeriksaan / Tindakan & Rekam Medis',
       itemOrPart: 'Obat / Alkes',
       itemOrPartPlural: 'Master Obat & Alat Kesehatan',
@@ -304,8 +304,11 @@ export const BUSINESS_PRESETS: Record<BusinessPresetType, BusinessPresetConfig> 
  * Helper to fetch config by preset id with fallback to BengkelQu
  */
 export function getBusinessPreset(presetId?: BusinessPresetType | string): BusinessPresetConfig {
-  if (presetId && presetId in BUSINESS_PRESETS) {
-    return BUSINESS_PRESETS[presetId as BusinessPresetType];
-  }
+  if (!presetId) return BUSINESS_PRESETS.bengkelqu;
+  const clean = presetId.toLowerCase().trim();
+  if (clean.includes('kedai')) return BUSINESS_PRESETS.kedaiqu;
+  if (clean.includes('ritel') || clean.includes('retail') || clean.includes('toko')) return BUSINESS_PRESETS.ritelqu;
+  if (clean.includes('klinik') || clean.includes('medika') || clean.includes('apotek')) return BUSINESS_PRESETS.klinikqu;
+  if (clean.includes('titip') || clean.includes('konsinyasi')) return BUSINESS_PRESETS.titipqu;
   return BUSINESS_PRESETS.bengkelqu;
 }

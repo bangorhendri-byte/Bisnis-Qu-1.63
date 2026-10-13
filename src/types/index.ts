@@ -219,7 +219,7 @@ export interface WorkshopProfile {
   phone: string;
   email: string;
   photoUrl?: string;
-  selectedPreset?: 'bengkelqu' | 'kedaiqu' | 'ritelqu' | 'klinikqu' | 'titipqu';
+  selectedPreset?: 'BengkelQu' | 'KedaiQu' | 'RitelQu' | 'KlinikQu' | 'TitipQu' | 'bengkelqu' | 'kedaiqu' | 'ritelqu' | 'klinikqu' | 'titipqu';
 }
 
 export interface RolePermissionConfig {
